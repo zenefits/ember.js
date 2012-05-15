@@ -1,4 +1,4 @@
-var get = Ember.get, set = Ember.set, getPath = Ember.getPath;
+var getPath = Ember.getPath;
 
 Ember.TargetActionSupport = Ember.Mixin.create({
   target: null,

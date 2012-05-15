@@ -1,4 +1,4 @@
-var get = Ember.get, set = Ember.set, a_slice = Array.prototype.slice;
+var a_slice = Array.prototype.slice;
 
 /** @private */
 function xform(target, method, params) {

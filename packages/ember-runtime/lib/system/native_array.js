@@ -11,7 +11,7 @@ require('ember-runtime/mixins/copyable');
 
 
 
-var get = Ember.get, set = Ember.set;
+
 
 // Add Ember.Array to Array.prototype.  Remove methods with native
 // implementations and supply some more optimized versions of generic methods

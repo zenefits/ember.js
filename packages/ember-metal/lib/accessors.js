@@ -20,8 +20,6 @@ var meta = Ember.meta;
 // Otherwise simulate accessors by looking up the property directly on the
 // object.
 
-var get, set;
-
 /** @private */
 get = function get(obj, keyName) {
   if (keyName === undefined && 'string' === typeof obj) {

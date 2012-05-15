@@ -10,7 +10,7 @@ require('ember-runtime/mixins/mutable_enumerable');
 require('ember-runtime/mixins/copyable');
 require('ember-runtime/mixins/freezable');
 
-var get = Ember.get, set = Ember.set, guidFor = Ember.guidFor, none = Ember.none;
+var guidFor = Ember.guidFor, none = Ember.none;
 
 /**
   @class

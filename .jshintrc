@@ -2,6 +2,8 @@
     "predef": [
         "console",
         "Ember",
+        "get",
+        "set",
         "DS",
         "Handlebars",
         "Metamorph",

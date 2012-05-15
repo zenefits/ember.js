@@ -50,6 +50,27 @@ class EmberLicenseFilter < Rake::Pipeline::Filter
   end
 end
 
+class EmberClosureWrapper < Rake::Pipeline::Filter
+  def generate_output(inputs, output)
+    preamble = <<-PREAMBLE
+(function() {
+  var get = null,
+      set = null,
+      Ember;
+
+    PREAMBLE
+
+    postamble = <<-POSTAMBLE
+})();
+    POSTAMBLE
+
+    inputs.each do |input|
+      file = File.read(input.fullpath)
+      output.write "#{preamble}\n#{file}\n#{postamble}"
+    end
+  end
+end
+
 class JSHintRC < Rake::Pipeline::Filter
   def jshintrc
     @jshintrc ||= File.read(".jshintrc")
@@ -135,6 +156,8 @@ distros.each do |name, modules|
     match "{#{name}.js,ember-debug.js}" do
       concat ["ember-debug.js"], "#{name}.js"
     end
+
+    filter EmberClosureWrapper
 
     # Strip dev code
     match "#{name}.prod.js" do

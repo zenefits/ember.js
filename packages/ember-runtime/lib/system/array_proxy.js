@@ -9,7 +9,7 @@ require('ember-runtime/system/object');
 
 
 
-var get = Ember.get, set = Ember.set;
+
 
 /**
   @class
