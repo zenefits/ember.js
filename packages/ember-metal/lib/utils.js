@@ -34,7 +34,7 @@ Ember.GUID_KEY = GUID_KEY;
 
 var GUID_DESC = {
   writable:    false,
-  configurable: false,
+  configurable: true,
   enumerable:  false,
   value: null
 };
@@ -212,14 +212,13 @@ Ember.meta = function meta(obj, writable) {
     // make sure we don't accidentally try to create constructor like desc
     ret.descs.constructor = null;
 
-  } else if (ret.source !== obj) {
+  } else if (!(obj.hasOwnProperty(META_KEY))) {
     if (!isDefinePropertySimulated) o_defineProperty(obj, META_KEY, META_DESC);
 
     ret = o_create(ret);
     ret.descs    = o_create(ret.descs);
     ret.watching = o_create(ret.watching);
     ret.cache    = {};
-    ret.source   = obj;
 
     if (MANDATORY_SETTER) { ret.values = o_create(ret.values); }
 
@@ -280,11 +279,10 @@ Ember.metaPath = function metaPath(obj, path, writable) {
 
     if (!value) {
       if (!writable) { return undefined; }
-      value = meta[keyName] = { __ember_source__: obj };
-    } else if (value.__ember_source__ !== obj) {
+      value = meta[keyName] = {};
+    } else if (!obj.hasOwnProperty(keyName)) {
       if (!writable) { return undefined; }
       value = meta[keyName] = o_create(value);
-      value.__ember_source__ = obj;
     }
 
     meta = value;

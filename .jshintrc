@@ -1,5 +1,6 @@
 {
     "predef": [
+        "Proxy",
         "console",
         "Ember",
         "DS",

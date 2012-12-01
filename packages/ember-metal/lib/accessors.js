@@ -15,6 +15,8 @@ var IS_GLOBAL_PATH = /^([A-Z$]|([0-9][A-Z$])).*[\.\*]/;
 var HAS_THIS  = /^this[\.\*]/;
 var FIRST_KEY = /^([^\.\*]+)/;
 
+var defineValue = Ember.platform.defineValue;
+
 // ..........................................................
 // GET AND SET
 //
@@ -154,7 +156,7 @@ set = function set(obj, keyName, value, tolerant) {
         Ember.propertyDidChange(obj, keyName);
       }
     } else {
-      obj[keyName] = value;
+      defineValue(obj, keyName, value);
     }
   }
   return value;

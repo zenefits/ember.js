@@ -12,6 +12,10 @@ var forEach = Ember.EnumerableUtils.forEach;
 
 var EachArray = Ember.Object.extend(Ember.Array, {
 
+  _keyName: null,
+  _owner: null,
+  _content: null,
+
   init: function(content, keyName, owner) {
     this._super();
     this._keyName = keyName;
@@ -81,6 +85,8 @@ function removeObserverForContentKey(content, keyName, proxy, idx, loc) {
   @extends Ember.Object
 */
 Ember.EachProxy = Ember.Object.extend({
+  _keys: null,
+  _content: null,
 
   init: function(content) {
     this._super();

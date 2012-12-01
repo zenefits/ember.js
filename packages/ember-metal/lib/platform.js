@@ -147,6 +147,15 @@ if (!platform.defineProperty) {
   platform.defineProperty.isSimulated = true;
 }
 
+platform.defineValue = function(obj, keyName, value) {
+  platform.defineProperty(obj, keyName, {
+    enumerable: true,
+    configurable: true,
+    writable: true,
+    value: value
+  });
+};
+
 if (Ember.ENV.MANDATORY_SETTER && !platform.hasPropertyAccessors) {
   Ember.ENV.MANDATORY_SETTER = false;
 }

@@ -42,7 +42,7 @@ testWithDefault('replacing computed property with regular val', function(get, se
 
 });
 
-testWithDefault('complex depndent keys', function(get, set) {
+testWithDefault('complex dependent keys', function(get, set) {
 
   var MyClass = Ember.Object.extend({
 
@@ -70,12 +70,12 @@ testWithDefault('complex depndent keys', function(get, set) {
   equal(get(obj1, 'foo'), 'BIFF 1');
   equal(get(obj2, 'foo'), 'BIFF 21');
 
-  set(get(obj1, 'bar'), 'baz', 'BLARG');
+  Ember.set(get(obj1, 'bar'), 'baz', 'BLARG');
 
   equal(get(obj1, 'foo'), 'BLARG 2');
   equal(get(obj2, 'foo'), 'BIFF 21');
 
-  set(get(obj2, 'bar'), 'baz', 'BOOM');
+  Ember.set(get(obj2, 'bar'), 'baz', 'BOOM');
 
   equal(get(obj1, 'foo'), 'BLARG 2');
   equal(get(obj2, 'foo'), 'BOOM 22');
@@ -118,10 +118,10 @@ testWithDefault('complex depndent keys changing complex dependent keys', functio
 
   equal(get(obj2, 'foo'), 'BIFF2 1');
 
-  set(get(obj2, 'bar'), 'baz', 'BLARG');
+  Ember.set(get(obj2, 'bar'), 'baz', 'BLARG');
   equal(get(obj2, 'foo'), 'BIFF2 1', 'should not invalidate property');
 
-  set(get(obj2, 'bar2'), 'baz', 'BLARG');
+  Ember.set(get(obj2, 'bar2'), 'baz', 'BLARG');
   equal(get(obj2, 'foo'), 'BLARG 2', 'should invalidate property');
 });
 

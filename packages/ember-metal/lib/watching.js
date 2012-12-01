@@ -40,8 +40,6 @@ function isKeyName(path) {
 // DEPENDENT KEYS
 //
 
-var DEP_SKIP = { __emberproto__: true }; // skip some keys and toString
-
 function iterDeps(method, obj, depKey, seen, meta) {
 
   var guid = guidFor(obj);
@@ -53,7 +51,6 @@ function iterDeps(method, obj, depKey, seen, meta) {
   deps = deps && deps[depKey];
   if (deps) {
     for(var key in deps) {
-      if (DEP_SKIP[key]) continue;
       var desc = meta.descs[key];
       if (desc && desc._suspended === obj) continue;
       method(obj, key);
@@ -91,9 +88,9 @@ function dependentKeysDidChange(obj, depKey, meta) {
 function addChainWatcher(obj, keyName, node) {
   if (!obj || ('object' !== typeof obj)) return; // nothing to do
   var m = metaFor(obj);
-  var nodes = m.chainWatchers;
-  if (!nodes || nodes.__emberproto__ !== obj) {
-    nodes = m.chainWatchers = { __emberproto__: obj };
+  var nodes = m.hasOwnProperty('chainWatchers') && m.chainWatchers;
+  if (!nodes) {
+    nodes = m.chainWatchers = {};
   }
 
   if (!nodes[keyName]) { nodes[keyName] = {}; }
@@ -104,8 +101,8 @@ function addChainWatcher(obj, keyName, node) {
 function removeChainWatcher(obj, keyName, node) {
   if (!obj || 'object' !== typeof obj) { return; } // nothing to do
   var m = metaFor(obj, false),
-      nodes = m.chainWatchers;
-  if (!nodes || nodes.__emberproto__ !== obj) { return; } //nothing to do
+      nodes = m.hasOwnProperty('chainWatchers') && m.chainWatchers;
+  if (!nodes) { return; } //nothing to do
   if (nodes[keyName]) { delete nodes[keyName][guidFor(node)]; }
   Ember.unwatch(obj, keyName);
 }
@@ -371,9 +368,9 @@ function chainsFor(obj) {
 }
 
 function notifyChains(obj, m, keyName, methodName, arg) {
-  var nodes = m.chainWatchers;
+  var nodes = m.hasOwnProperty('chainWatchers') && m.chainWatchers;
 
-  if (!nodes || nodes.__emberproto__ !== obj) { return; } // nothing to do
+  if (!nodes) { return; } // nothing to do
 
   nodes = nodes[keyName];
   if (!nodes) { return; }
@@ -418,12 +415,15 @@ Ember.watch = function(obj, keyName) {
   // can't watch length on Array - it is special...
   if (keyName === 'length' && Ember.typeOf(obj) === 'array') { return this; }
 
-  var m = metaFor(obj), watching = m.watching, desc;
+  var m = metaFor(obj), watching = m.watching, 
+      isKey = isKeyName(keyName), desc, value;
 
   // activate watching first time
   if (!watching[keyName]) {
+    if (isKey) { value = obj[keyName]; }
+
     watching[keyName] = 1;
-    if (isKeyName(keyName)) {
+    if (isKey) {
       desc = m.descs[keyName];
       if (desc && desc.willWatch) { desc.willWatch(obj, keyName); }
 
@@ -432,7 +432,7 @@ Ember.watch = function(obj, keyName) {
       }
 
       if (MANDATORY_SETTER && keyName in obj) {
-        m.values[keyName] = obj[keyName];
+        m.values[keyName] = value;
         o_defineProperty(obj, keyName, {
           configurable: true,
           enumerable: true,

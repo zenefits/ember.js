@@ -12,7 +12,8 @@ var GUID_KEY = Ember.GUID_KEY,
     EMPTY_META = Ember.EMPTY_META,
     metaFor = Ember.meta,
     o_create = Ember.create,
-    objectDefineProperty = Ember.platform.defineProperty;
+    objectDefineProperty = Ember.platform.defineProperty,
+    objectDefineValue = Ember.platform.defineValue;
 
 var MANDATORY_SETTER = Ember.ENV.MANDATORY_SETTER;
 
@@ -97,16 +98,7 @@ Ember.defineProperty = function(obj, keyName, desc, data, meta) {
     value = desc;
 
     descs[keyName] = desc;
-    if (MANDATORY_SETTER && watching) {
-      objectDefineProperty(obj, keyName, {
-        configurable: true,
-        enumerable: true,
-        writable: true,
-        value: undefined // make enumerable
-      });
-    } else {
-      obj[keyName] = undefined; // make enumerable
-    }
+    objectDefineValue(obj, keyName, undefined);
     desc.setup(obj, keyName);
   } else {
     descs[keyName] = undefined; // shadow descriptor in proto
@@ -127,7 +119,7 @@ Ember.defineProperty = function(obj, keyName, desc, data, meta) {
           }
         });
       } else {
-        obj[keyName] = data;
+        objectDefineValue(obj, keyName, data);
       }
     } else {
       value = desc;
@@ -143,7 +135,7 @@ Ember.defineProperty = function(obj, keyName, desc, data, meta) {
 
   // The `value` passed to the `didDefineProperty` hook is
   // either the descriptor or data, whichever was passed.
-  if (obj.didDefineProperty) { obj.didDefineProperty(obj, keyName, value); }
+  if (typeof obj.didDefineProperty === 'function') { obj.didDefineProperty(obj, keyName, value); }
 
   return this;
 };
