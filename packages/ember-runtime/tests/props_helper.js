@@ -1,5 +1,3 @@
-Ember.USES_ACCESSORS = true;
-
 // used by unit tests to test both accessor mode and non-accessor mode
 testBoth = function(testname, callback) {
 

@@ -48,10 +48,10 @@ var defineValue = Ember.platform.defineValue;
   @param {String} keyName The property key to retrieve
   @return {Object} the property value or null.
 */
-get = function get(obj, keyName) {
+get = function get(obj, keyName, proxy) {
   // Helpers that operate with 'this' within an #each
   if (keyName === '') {
-    return obj;
+    return proxy || obj;
   }
 
   if (!keyName && 'string'===typeof obj) {
@@ -59,15 +59,17 @@ get = function get(obj, keyName) {
     obj = null;
   }
 
-  if (!obj || keyName.indexOf('.') !== -1) {
-    return getPath(obj, keyName);
+  proxy = proxy || obj;
+
+  if (!proxy || keyName.indexOf('.') !== -1) {
+    return getPath(proxy, keyName);
   }
 
   Ember.assert("You need to provide an object and key to `get`.", !!obj && keyName);
 
-  var meta = obj[META_KEY], desc = meta && meta.descs[keyName], ret;
+  var meta = proxy[META_KEY], desc = meta && meta.descs[keyName], ret;
   if (desc) {
-    return desc.get(obj, keyName);
+    return desc.get(proxy, keyName);
   } else {
     if (MANDATORY_SETTER && meta && meta.watching[keyName] > 0) {
       ret = meta.values[keyName];
@@ -77,7 +79,7 @@ get = function get(obj, keyName) {
 
     if (ret === undefined &&
         'object' === typeof obj && !(keyName in obj) && 'function' === typeof obj.unknownProperty) {
-      return obj.unknownProperty(keyName);
+      return proxy.unknownProperty(keyName);
     }
 
     return ret;
@@ -107,7 +109,7 @@ get = function get(obj, keyName) {
   @param {Object} value The value to set
   @return {Object} the passed value.
 */
-set = function set(obj, keyName, value, tolerant) {
+set = function set(obj, keyName, value, tolerant, proxy) {
   if (typeof obj === 'string') {
     Ember.assert("Path '" + obj + "' must be global if no obj is given.", IS_GLOBAL.test(obj));
     value = keyName;
@@ -115,8 +117,10 @@ set = function set(obj, keyName, value, tolerant) {
     obj = null;
   }
 
-  if (!obj || keyName.indexOf('.') !== -1) {
-    return setPath(obj, keyName, value, tolerant);
+  proxy = proxy || obj;
+
+  if (!proxy || keyName.indexOf('.') !== -1) {
+    return setPath(proxy, keyName, value, tolerant);
   }
 
   Ember.assert("You need to provide an object and key to `set`.", !!obj && keyName !== undefined);
@@ -125,7 +129,7 @@ set = function set(obj, keyName, value, tolerant) {
   var meta = obj[META_KEY], desc = meta && meta.descs[keyName],
       isUnknown, currentValue;
   if (desc) {
-    desc.set(obj, keyName, value);
+    desc.set(proxy, keyName, value);
   }
   else {
     isUnknown = 'object' === typeof obj && !(keyName in obj);
@@ -134,29 +138,29 @@ set = function set(obj, keyName, value, tolerant) {
     // the property does not already exist, and the
     // `setUnknownProperty` method exists on the object
     if (isUnknown && 'function' === typeof obj.setUnknownProperty) {
-      obj.setUnknownProperty(keyName, value);
+      proxy.setUnknownProperty(keyName, value);
     } else if (meta && meta.watching[keyName] > 0) {
       if (MANDATORY_SETTER) {
         currentValue = meta.values[keyName];
       } else {
-        currentValue = obj[keyName];
+        currentValue = proxy[keyName];
       }
       // only trigger a change if the value has changed
       if (value !== currentValue) {
-        Ember.propertyWillChange(obj, keyName);
+        Ember.propertyWillChange(proxy, keyName);
         if (MANDATORY_SETTER) {
-          if (currentValue === undefined && !(keyName in obj)) {
-            Ember.defineProperty(obj, keyName, null, value); // setup mandatory setter
+          if (currentValue === undefined && !(keyName in proxy)) {
+            Ember.defineProperty(proxy, keyName, null, value); // setup mandatory setter
           } else {
             meta.values[keyName] = value;
           }
         } else {
           obj[keyName] = value;
         }
-        Ember.propertyDidChange(obj, keyName);
+        Ember.propertyDidChange(proxy, keyName);
       }
     } else {
-      defineValue(obj, keyName, value);
+      defineValue(proxy, keyName, value);
     }
   }
   return value;
@@ -217,7 +221,7 @@ function getPath(root, path) {
   parts = path.split(".");
   len = parts.length;
   for (idx=0; root && idx<len; idx++) {
-    root = get(root, parts[idx], true);
+    root = get(root, parts[idx]);
     if (root && root.isDestroyed) { return undefined; }
   }
   return root;

@@ -2105,12 +2105,12 @@ function makeCtor() {
           if (name === META_KEY) { return target[META_KEY]; }
           if (name in {}) { return target[name]; }
 
-          return get(target, name);
+          return get(target, name, receiver);
         },
 
         set: function(target, name, val, receiver) {
           if (name === '_super' || name === Ember.META_KEY) { target[name] = val; return receiver; }
-          set(target, name, val);
+          set(target, name, val, false, receiver);
           return receiver;
         }
       });
