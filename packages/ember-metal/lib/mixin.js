@@ -647,7 +647,7 @@ Ember.required = function() {
   return REQUIRED;
 };
 
-Alias = function(methodName) {
+Alias = Ember.Alias = function(methodName) {
   this.methodName = methodName;
 };
 Alias.prototype = new Ember.Descriptor();

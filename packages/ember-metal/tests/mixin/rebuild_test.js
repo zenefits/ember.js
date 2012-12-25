@@ -186,3 +186,87 @@ test("Concatenated properties are concatenated", function() {
 
   deepEqual(state.values.list, [ 'one', 'two' ]);
 });
+
+test("processMixin can be used for anonymous property lists", function() {
+  var M1 = Ember.Mixin.create({
+    method: function() {
+      return 'method';
+    }
+  });
+
+  var M2 = {
+    method: function() {
+      return this._super() + '!';
+    }
+  };
+
+  var state = Ember.processMixins([ M1 ]);
+  Ember.processMixin(M2, state);
+
+  equal(state.values.method(), 'method!');
+});
+
+test("processMixins produces a list of aliases", function() {
+  var M1 = Ember.Mixin.create({
+    first: Ember.alias('second'),
+    second: Ember.alias('third'),
+    third: 3
+  });
+
+  var state = Ember.processMixins([ M1 ]);
+
+  deepEqual(state.aliases, { first: 'second', second: 'third' });
+});
+
+test("resolveAliases resolve aliases in the processed mixins", function() {
+  var M1 = Ember.Mixin.create({
+    first: Ember.alias('second'),
+    second: Ember.alias('third'),
+    third: 3
+  });
+
+  var state = Ember.processMixins([ M1 ]);
+  Ember.resolveAliases(state);
+
+  equal(state.values.first, 3);
+  equal(state.values.second, 3);
+  equal(state.values.third, 3);
+});
+
+test("resolveAliases resolves computed property aliases", function() {
+  var computed = Ember.computed();
+
+  var M1 = Ember.Mixin.create({
+    first: Ember.alias('second'),
+    second: Ember.alias('third'),
+    third: computed
+  });
+
+  var state = Ember.processMixins([ M1 ]);
+  Ember.resolveAliases(state);
+
+  equal(state.descriptors.first, computed);
+  equal(state.descriptors.second, computed);
+  equal(state.descriptors.third, computed);
+});
+
+test("Aliases can reference future mixins", function() {
+  var M1 = Ember.Mixin.create({
+    first: Ember.alias('second')
+  });
+
+  var M2 = Ember.Mixin.create({
+    second: Ember.alias('third')
+  });
+
+  var M3 = Ember.Mixin.create({
+    third: 3
+  });
+
+  var state = Ember.processMixins([ M1, M2, M3 ]);
+  Ember.resolveAliases(state);
+
+  equal(state.values.first, 3);
+  equal(state.values.second, 3);
+  equal(state.values.third, 3);
+});

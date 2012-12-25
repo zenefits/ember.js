@@ -54,7 +54,7 @@ function flattenMixins(mixins) {
 }
 
 function processMixins(mixins) {
-  var state = { descriptors: {}, values: {}, concat: {} };
+  var state = { descriptors: {}, values: {}, concat: {}, aliases: {} };
   mixins = flattenMixins(mixins);
 
   for (var i=0, l=mixins.length; i<l; i++) {
@@ -106,6 +106,11 @@ function addProperty(name, value, state) {
   if (value instanceof Ember.Descriptor) {
     if (value === REQUIRED) { return; }
 
+    if (value instanceof Ember.Alias) {
+      state.aliases[name] = value.methodName;
+      return;
+    }
+
     value = wrapSuperProperty(value, state.descriptors[name]);
 
     state.descriptors[name] = value;
@@ -116,6 +121,31 @@ function addProperty(name, value, state) {
 
     state.descriptors[name] = undefined;
     state.values[name] = value;
+  }
+}
+
+function resolveAliases(state) {
+  var aliases = state.aliases, alias;
+
+  for (var name in aliases) {
+    alias = aliases[name];
+    while (alias = resolveAlias(name, alias, state));
+  }
+}
+
+function resolveAlias(key, alias, state) {
+  delete state.aliases[key];
+
+  var descriptors = state.descriptors,
+      values = state.values,
+      descriptor, value, nextAlias;
+
+  if (nextAlias = state.aliases[alias]) {
+    return nextAlias;
+  } else if (descriptor = descriptors[alias]) {
+    descriptors[key] = descriptor;
+  } else if (value = values[alias]) {
+    values[key] = value;
   }
 }
 
@@ -146,3 +176,4 @@ function isMethod(obj) {
 
 Ember.flattenMixins = flattenMixins;
 Ember.processMixin = processMixin;
+Ember.resolveAliases = resolveAliases;
