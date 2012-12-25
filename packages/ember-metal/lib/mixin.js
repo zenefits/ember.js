@@ -603,7 +603,7 @@ classToString = function() {
     if (str) {
       ret = "(subclass of " + str + ")";
     } else {
-      ret = "(unknown mixin)";
+      ret = "(unknown mixin:" + guidFor(this) + ")";
     }
     this.toString = makeToString(ret);
   }
