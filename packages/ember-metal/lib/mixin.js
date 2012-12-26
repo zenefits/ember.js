@@ -20,7 +20,9 @@ var Mixin, REQUIRED, Alias,
     EMPTY_META = {}, // dummy for non-writable meta
     o_create = Ember.create,
     defineProperty = Ember.defineProperty,
-    guidFor = Ember.guidFor;
+    guidFor = Ember.guidFor,
+    SETUP_KEY = Ember.SETUP_KEY,
+    TEARDOWN_KEY = Ember.TEARDOWN_KEY;
 
 function mixinsMeta(obj) {
   var m = Ember.meta(obj, true), ret = m.mixins;
@@ -208,7 +210,7 @@ function writableReq(obj) {
   return req;
 }
 
-var IS_BINDING = Ember.IS_BINDING = /^.+Binding$/;
+var IS_BINDING = Ember.IS_BINDING;
 
 function detectBinding(obj, key, value, m) {
   if (IS_BINDING.test(key)) {
@@ -693,8 +695,31 @@ Ember.alias = function(methodName) {
 Ember.observer = function(func) {
   var paths = a_slice.call(arguments, 1);
   func.__ember_observes__ = paths;
+  func[SETUP_KEY] = setupObserver(paths);
+  func[TEARDOWN_KEY] = teardownObserver(paths);
   return func;
 };
+
+var addObserver = Ember.addObserver,
+    removeObserver = Ember.removeObserver,
+    addBeforeObserver = Ember.addBeforeObserver,
+    removeBeforeObserver = Ember.removeBeforeObserver;
+
+function setupObserver(paths) {
+  return function(obj, key) {
+    for (var i=0, l=paths.length; i<l; i++) {
+      addObserver(obj, paths[i], null, key);
+    }
+  };
+}
+
+function teardownObserver(paths) {
+  return function(obj, key) {
+    for (var i=0, l=paths.length; i<l; i++) {
+      removeObserver(obj, paths[i], null, key);
+    }
+  };
+}
 
 // If observers ever become asynchronous, Ember.immediateObserver
 // must remain synchronous.
@@ -724,5 +749,24 @@ Ember.immediateObserver = function() {
 Ember.beforeObserver = function(func) {
   var paths = a_slice.call(arguments, 1);
   func.__ember_observesBefore__ = paths;
+  func[SETUP_KEY] = setupBeforeObserver(paths);
+  func[TEARDOWN_KEY] = teardownBeforeObserver(paths);
   return func;
 };
+
+function setupBeforeObserver(paths) {
+  return function(obj, key) {
+    for (var i=0, l=paths.length; i<l; i++) {
+      addBeforeObserver(obj, paths[i], null, key);
+    }
+  };
+}
+
+function teardownBeforeObserver(paths) {
+  return function(obj, key) {
+    for (var i=0, l=paths.length; i<l; i++) {
+      removeBeforeObserver(obj, paths[i], null, key);
+    }
+  };
+}
+

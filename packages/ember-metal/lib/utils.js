@@ -15,6 +15,10 @@ var o_defineProperty = Ember.platform.defineProperty,
 
 var MANDATORY_SETTER = Ember.ENV.MANDATORY_SETTER;
 
+Ember.SETUP_KEY = GUID_KEY + '_setup';
+Ember.TEARDOWN_KEY = GUID_KEY + '_teardown';
+Ember.IS_BINDING = /^(.+)Binding$/;
+
 /**
   @private
 
@@ -159,7 +163,6 @@ function Meta(obj) {
   this.descs = {};
   this.watching = {};
   this.cache = {};
-  this.source = obj;
 }
 
 if (isDefinePropertySimulated) {
@@ -209,14 +212,13 @@ Ember.meta = function meta(obj, writable) {
     // make sure we don't accidentally try to create constructor like desc
     ret.descs.constructor = null;
 
-  } else if (ret.source !== obj) {
+  } else if (!ret.hasOwnProperty(META_KEY)) {
     if (!isDefinePropertySimulated) o_defineProperty(obj, META_KEY, META_DESC);
 
     ret = o_create(ret);
     ret.descs    = o_create(ret.descs);
     ret.watching = o_create(ret.watching);
     ret.cache    = {};
-    ret.source   = obj;
 
     if (MANDATORY_SETTER) { ret.values = o_create(ret.values); }
 
@@ -277,11 +279,10 @@ Ember.metaPath = function metaPath(obj, path, writable) {
 
     if (!value) {
       if (!writable) { return undefined; }
-      value = meta[keyName] = { __ember_source__: obj };
-    } else if (value.__ember_source__ !== obj) {
+      value = meta[keyName] = {};
+    } else if (!meta.hasOwnProperty(keyName)) {
       if (!writable) { return undefined; }
       value = meta[keyName] = o_create(value);
-      value.__ember_source__ = obj;
     }
 
     meta = value;
