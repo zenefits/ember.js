@@ -972,7 +972,7 @@ test('navigating away triggers a url property change', function() {
     router.handleURL("/");
   });
 
-  equal(urlPropertyChangeCount, 2);
+  equal(urlPropertyChangeCount, 1);
 
   Ember.run(function() {
     // Trigger the callback that would otherwise be triggered
@@ -981,7 +981,7 @@ test('navigating away triggers a url property change', function() {
     router.router.transitionTo('bar');
   });
 
-  equal(urlPropertyChangeCount, 4, 'triggered url property change');
+  equal(urlPropertyChangeCount, 2, 'triggered url property change');
 });
 
 
