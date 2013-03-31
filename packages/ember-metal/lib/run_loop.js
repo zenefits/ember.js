@@ -115,7 +115,7 @@ RunLoop.prototype = {
 
         // the sync phase is to allow property changes to propagate. don't
         // invoke observers until that is finished.
-        if (queueName === 'sync') {
+        if (queueName === 'sync' || queueName === 'actions') {
           log = Ember.LOG_BINDINGS;
           if (log) { Ember.Logger.log('Begin: Flush Sync Queue'); }
 
@@ -144,7 +144,7 @@ RunLoop.prototype = {
         if (queue) {
           // the sync phase is to allow property changes to propagate. don't
           // invoke observers until that is finished.
-          if (queueName === 'sync') {
+          if (queueName === 'sync' || queueName === 'actions') {
             log = Ember.LOG_BINDINGS;
             if (log) { Ember.Logger.log('Begin: Flush Sync Queue'); }
 
