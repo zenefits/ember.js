@@ -212,16 +212,18 @@ Ember.RunLoop = RunLoop;
   @return {Object} return value from invoking the passed function.
 */
 Ember.run = function(target, method) {
-  var args = arguments;
-  run.begin();
-
-  function tryable() {
-    if (target || method) {
-      return invoke(target, method, args, 2);
-    }
+  var args = slice.call(arguments, 2), res;
+  if (method === undefined) {
+    method = target;
+    target = undefined;
   }
-
-  return Ember.tryFinally(tryable, run.end);
+  if ('string' === typeof method) { method = target[method]; }
+  run.begin();
+  run.schedule('actions', function () {
+    res = method.apply(target, args);
+  });
+  run.end();
+  return res;
 };
 
 var run = Ember.run;
