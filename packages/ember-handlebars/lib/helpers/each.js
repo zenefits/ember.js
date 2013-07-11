@@ -15,12 +15,13 @@ Ember.Handlebars.EachView = Ember.CollectionView.extend(Ember._Metamorph, {
     var binding;
 
     if (itemController) {
-      var controller = Ember.ArrayController.create();
-      set(controller, 'itemController', itemController);
-      set(controller, 'container', get(this, 'controller.container'));
-      set(controller, '_eachView', this);
-      set(controller, 'target', get(this, 'controller'));
-      set(controller, 'parentController', get(this, 'controller'));
+      var controller = this.container.lookupFactory('controller:array').create({
+        container: get(this, 'controller.container'),
+        parentController: get(this, 'controller'),
+        itemController: itemController,
+        target: get(this, 'controller'),
+        _eachView: this
+      });
 
       this.disableContentObservers(function() {
         set(this, 'content', controller);
