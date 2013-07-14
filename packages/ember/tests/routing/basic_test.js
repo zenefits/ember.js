@@ -16,7 +16,7 @@ function handleURL(path) {
       ok(true, 'url: `' + path + '` was handled');
       return value;
     }, function(reason) {
-      ok(false, reason);
+      ok(false, 'failed to visit:`' + path + '` reason: `' + QUnit.jsDump.parse(reason));
       throw reason;
     });
   });
