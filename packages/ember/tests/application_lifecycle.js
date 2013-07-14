@@ -1,4 +1,4 @@
-var App, container;
+var App, container, router;
 
 module("Application Lifecycle", {
   setup: function() {
@@ -6,6 +6,7 @@ module("Application Lifecycle", {
       App = Ember.Application.create({
         rootElement: '#qunit-fixture'
       });
+
       App.deferReadiness();
 
       App.Router = Ember.Router.extend({
@@ -14,12 +15,28 @@ module("Application Lifecycle", {
 
       container = App.__container__;
     });
+
+    router = container.lookup('router:main');
   },
 
   teardown: function() {
+    router = null;
     Ember.run(App, 'destroy');
   }
 });
+
+function handleURL(path) {
+  return Ember.run(function() {
+    return router.handleURL(path).then(function(value) {
+      ok(true, 'url: `' + path + '` was handled');
+      return value;
+    }, function(reason) {
+      ok(false, reason);
+      throw reason;
+    });
+  });
+}
+
 
 test("Resetting the application allows controller properties to be set when a route deactivates", function() {
   App.Router.map(function() {
@@ -44,16 +61,16 @@ test("Resetting the application allows controller properties to be set when a ro
 
   var homeController = Ember.controllerFor(container, 'home');
   var applicationController = Ember.controllerFor(container, 'application');
-  var router = container.lookup('router:main');
 
   Ember.run(App, 'advanceReadiness');
-  Ember.run(function() {
-    router.handleURL('/');
-  });
+
+  handleURL('/');
+
   equal(homeController.get('selectedMenuItem'), 'home');
   equal(applicationController.get('selectedMenuItem'), 'home');
 
   App.reset();
+
   equal(homeController.get('selectedMenuItem'), null);
   equal(applicationController.get('selectedMenuItem'), null);
 });

@@ -32,8 +32,6 @@ function handleURLAborts(path) {
   });
 }
 
-
-
 function handleURLRejectsWith(path, expectedReason) {
   Ember.run(function() {
     router.handleURL(path).then(function(value) {

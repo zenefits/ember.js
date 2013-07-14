@@ -86,10 +86,8 @@ Ember.Router = Ember.Object.extend({
   handleURL: function(url) {
     scheduleLoadingStateEntry(this);
 
-    var self = this;
-
-    return this.router.handleURL(url).then(function() {
-      transitionCompleted(self);
+    return this.router.handleURL(url).then(function(route) {
+      transitionCompleted(route.router);
     });
   },
 
@@ -259,8 +257,8 @@ function doTransition(router, method, args) {
   scheduleLoadingStateEntry(router);
 
   var transitionPromise = router.router[method].apply(router.router, args);
-  transitionPromise.then(function() {
-    transitionCompleted(router);
+  transitionPromise.then(function(route) {
+    transitionCompleted(route.router);
   });
 
   // We want to return the configurable promise object
