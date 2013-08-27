@@ -13,7 +13,7 @@ suite.test("[X].removeAt(0) => [] + notify", function() {
   after  = [];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.removeAt(0), obj, 'return self');
 
@@ -41,7 +41,7 @@ suite.test("[A,B].removeAt(0) => [B] + notify", function() {
   after  = [before[1]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.removeAt(0), obj, 'return self');
 
@@ -63,7 +63,7 @@ suite.test("[A,B].removeAt(1) => [A] + notify", function() {
   after  = [before[0]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.removeAt(1), obj, 'return self');
 
@@ -85,7 +85,7 @@ suite.test("[A,B,C].removeAt(1) => [A,C] + notify", function() {
   after  = [before[0], before[2]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.removeAt(1), obj, 'return self');
 
@@ -107,7 +107,7 @@ suite.test("[A,B,C,D].removeAt(1,2) => [A,D] + notify", function() {
   after  = [before[0], before[3]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.removeAt(1,2), obj, 'return self');
 

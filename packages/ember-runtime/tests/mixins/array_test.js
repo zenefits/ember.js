@@ -7,13 +7,12 @@ require('ember-runtime/~tests/suites/array');
   Implement a basic fake mutable array.  This validates that any non-native
   enumerable can impl this API.
 */
-var TestArray = Ember.Object.extend(Ember.Array, {
+function TestArray(ary) {
+  this._content = ary || [];
+}
+Ember.mixin(TestArray.prototype, Ember.Array, {
 
   _content: null,
-
-  init: function(ary) {
-    this._content = ary || [];
-  },
 
   // some methods to modify the array so we can test changes.  Note that
   // arrays can be modified even if they don't implement MutableArray.  The
@@ -39,7 +38,6 @@ var TestArray = Ember.Object.extend(Ember.Array, {
     return this._content.length;
   })
 });
-
 
 Ember.ArrayTests.extend({
 
@@ -379,11 +377,10 @@ test('using @each to observe arrays that does not return objects raise error', f
     }
   });
 
-  ary = TestArray.create({
-    objectAt: function(idx) {
-      return get(this._content[idx], 'desc');
-    }
-  });
+  ary = new TestArray();
+  ary.objectAt = function(idx) {
+    return get(this._content[idx], 'desc');
+  };
 
   Ember.addObserver(ary, '@each.isDone', observerObject, 'wasCalled');
 

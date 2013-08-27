@@ -4,13 +4,13 @@ require('ember-runtime/~tests/suites/mutable_array');
   Implement a basic fake mutable array.  This validates that any non-native
   enumerable can impl this API.
 */
-var TestMutableArray = Ember.Object.extend(Ember.MutableArray, {
+function TestMutableArray(ary) {
+  this._content = Ember.A(ary || []);
+}
+
+Ember.mixin(TestMutableArray.prototype, Ember.MutableArray, {
 
   _content: null,
-
-  init: function(ary) {
-    this._content = Ember.A(ary || []);
-  },
 
   replace: function(idx, amt, objects) {
 

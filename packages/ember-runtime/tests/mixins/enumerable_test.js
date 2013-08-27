@@ -6,13 +6,13 @@ var indexOf = Ember.EnumerableUtils.indexOf;
   Implement a basic fake enumerable.  This validates that any non-native
   enumerable can impl this API.
 */
-var TestEnumerable = Ember.Object.extend(Ember.Enumerable, {
+function TestEnumerable(ary) {
+  this._content = ary || [];
+}
+
+Ember.mixin(TestEnumerable.prototype, Ember.Enumerable, {
 
   _content: null,
-
-  init: function(ary) {
-    this._content = ary || [];
-  },
 
   addObject: function(obj) {
     if (indexOf(this._content, obj)>=0) return this;

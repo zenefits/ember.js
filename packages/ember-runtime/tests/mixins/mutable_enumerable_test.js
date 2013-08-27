@@ -6,7 +6,10 @@ var indexOf = Ember.EnumerableUtils.indexOf;
   Implement a basic fake mutable array.  This validates that any non-native
   enumerable can impl this API.
 */
-var TestMutableEnumerable = Ember.Object.extend(Ember.MutableEnumerable, {
+function TestMutableEnumerable(ary) {
+  this._content = ary || [];
+}
+Ember.mixin(TestMutableEnumerable.prototype, Ember.MutableEnumerable, {
 
   _content: null,
 
@@ -25,10 +28,6 @@ var TestMutableEnumerable = Ember.Object.extend(Ember.MutableEnumerable, {
     this._content.splice(idx, 1);
     this.enumerableContentDidChange([obj], null);
     return this;
-  },
-
-  init: function(ary) {
-    this._content = ary || [];
   },
 
   nextObject: function(idx) {

@@ -11,7 +11,7 @@ suite.test("[].shiftObject() => [] + returns undefined + NO notify", function() 
   after  = [];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.shiftObject(), undefined);
 
@@ -33,7 +33,7 @@ suite.test("[X].shiftObject() => [] + notify", function() {
   after  = [];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.shiftObject(), before[0], 'should return object');
 
@@ -54,7 +54,7 @@ suite.test("[A,B,C].shiftObject() => [B,C] + notify", function() {
   after  = [before[1], before[2]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.shiftObject(), before[0], 'should return object');
 

@@ -11,7 +11,7 @@ suite.test("[A,B,C].setObjects([]) = > [] + notify", function() {
   after  = [];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.setObjects(after), obj, 'return self');
 
@@ -32,7 +32,7 @@ suite.test("[A,B,C].setObjects([D, E, F, G]) = > [D, E, F, G] + notify", functio
   after  = this.newFixture(4);
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.setObjects(after), obj, 'return self');
 

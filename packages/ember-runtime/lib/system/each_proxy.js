@@ -10,15 +10,12 @@ require('ember-runtime/mixins/array');
 var set = Ember.set, get = Ember.get, guidFor = Ember.guidFor;
 var forEach = Ember.EnumerableUtils.forEach;
 
-var EachArray = Ember.Object.extend(Ember.Array, {
-
-  init: function(content, keyName, owner) {
-    this._super();
-    this._keyName = keyName;
-    this._owner   = owner;
-    this._content = content;
-  },
-
+function EachArray(content, keyName, owner) {
+  this._keyName = keyName;
+  this._owner   = owner;
+  this._content = content;
+}
+Ember.mixin(EachArray.prototype, Ember.Array, {
   objectAt: function(idx) {
     var item = this._content.objectAt(idx);
     return item && get(item, this._keyName);
@@ -28,7 +25,6 @@ var EachArray = Ember.Object.extend(Ember.Array, {
     var content = this._content;
     return content ? get(content, 'length') : 0;
   })
-
 });
 
 var IS_OBSERVER = /^.+:(before|change)$/;
@@ -79,22 +75,16 @@ function removeObserverForContentKey(content, keyName, proxy, idx, loc) {
   @private
   @class EachProxy
   @namespace Ember
-  @extends Ember.Object
 */
-Ember.EachProxy = Ember.Object.extend({
+function EachProxy(content) {
+  this._content = content;
+  content.addArrayObserver(this);
 
-  init: function(content) {
-    this._super();
-    this._content = content;
-    content.addArrayObserver(this);
-
-    // in case someone is already observing some keys make sure they are
-    // added
-    forEach(Ember.watchedEvents(this), function(eventName) {
-      this.didAddListener(eventName);
-    }, this);
-  },
-
+  forEach(Ember.watchedEvents(this), function(eventName) {
+    this.didAddListener(eventName);
+  }, this);
+}
+Ember.mixin(EachProxy.prototype, {
   /**
     You can directly access mapped properties by simply requesting them.
     The `unknownProperty` handler will generate an EachArray of each item.
@@ -202,4 +192,4 @@ Ember.EachProxy = Ember.Object.extend({
 
 });
 
-
+Ember.EachProxy = EachProxy;

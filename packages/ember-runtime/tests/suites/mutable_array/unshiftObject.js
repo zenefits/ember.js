@@ -19,7 +19,7 @@ suite.test("[].unshiftObject(X) => [X] + notify", function() {
   after  = [item];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   obj.unshiftObject(item);
 
@@ -41,7 +41,7 @@ suite.test("[A,B,C].unshiftObject(X) => [X,A,B,C] + notify", function() {
   after  = [item, before[0], before[1], before[2]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   obj.unshiftObject(item);
 
@@ -64,7 +64,7 @@ suite.test("[A,B,C].unshiftObject(A) => [A,A,B,C] + notify", function() {
   after  = [item, before[0], before[1], before[2]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   obj.unshiftObject(item);
 

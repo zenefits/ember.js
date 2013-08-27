@@ -42,9 +42,9 @@ function makeCtor() {
   // method a lot faster. This is glue code so we want it to be as fast as
   // possible.
 
-  var wasApplied = false, initMixins, initProperties;
+  var wasApplied = false, initMixins;
 
-  var Class = function() {
+  var Class = function(properties) {
     if (!wasApplied) {
       Class.proto(); // prepare prototype...
     }
@@ -58,63 +58,54 @@ function makeCtor() {
       initMixins = null;
       this.reopen.apply(this, mixins);
     }
-    if (initProperties) {
-      // capture locally so we can clear the closed over variable
-      var props = initProperties;
-      initProperties = null;
+    if (properties) {
+      Ember.assert("Ember.Object.create no longer supports mixing in other definitions, use createWithMixins instead.", !(properties instanceof Ember.Mixin));
 
       var concatenatedProperties = this.concatenatedProperties;
+      for (var keyName in properties) {
+        if (!properties.hasOwnProperty(keyName)) { continue; }
 
-      for (var i = 0, l = props.length; i < l; i++) {
-        var properties = props[i];
+        var value = properties[keyName],
+            IS_BINDING = Ember.IS_BINDING;
 
-        Ember.assert("Ember.Object.create no longer supports mixing in other definitions, use createWithMixins instead.", !(properties instanceof Ember.Mixin));
-
-        for (var keyName in properties) {
-          if (!properties.hasOwnProperty(keyName)) { continue; }
-
-          var value = properties[keyName],
-              IS_BINDING = Ember.IS_BINDING;
-
-          if (IS_BINDING.test(keyName)) {
-            var bindings = m.bindings;
-            if (!bindings) {
-              bindings = m.bindings = {};
-            } else if (!m.hasOwnProperty('bindings')) {
-              bindings = m.bindings = o_create(m.bindings);
-            }
-            bindings[keyName] = value;
+        if (IS_BINDING.test(keyName)) {
+          var bindings = m.bindings;
+          if (!bindings) {
+            bindings = m.bindings = {};
+          } else if (!m.hasOwnProperty('bindings')) {
+            bindings = m.bindings = o_create(m.bindings);
           }
+          bindings[keyName] = value;
+        }
 
-          var desc = m.descs[keyName];
+        var desc = m.descs[keyName];
 
-          Ember.assert("Ember.Object.create no longer supports defining computed properties.", !(value instanceof Ember.ComputedProperty));
-          Ember.assert("Ember.Object.create no longer supports defining methods that call _super.", !(typeof value === 'function' && value.toString().indexOf('._super') !== -1));
+        Ember.assert("Ember.Object.create no longer supports defining computed properties.", !(value instanceof Ember.ComputedProperty));
+        Ember.assert("Ember.Object.create no longer supports defining methods that call _super.", !(typeof value === 'function' && value.toString().indexOf('._super') !== -1));
 
-          if (concatenatedProperties && indexOf(concatenatedProperties, keyName) >= 0) {
-            var baseValue = this[keyName];
+        if (concatenatedProperties && indexOf(concatenatedProperties, keyName) >= 0) {
+          var baseValue = this[keyName];
 
-            if (baseValue) {
-              if ('function' === typeof baseValue.concat) {
-                value = baseValue.concat(value);
-              } else {
-                value = Ember.makeArray(baseValue).concat(value);
-              }
+          if (baseValue) {
+            if ('function' === typeof baseValue.concat) {
+              value = baseValue.concat(value);
             } else {
-              value = Ember.makeArray(value);
+              value = Ember.makeArray(baseValue).concat(value);
             }
-          }
-
-          if (desc) {
-            desc.set(this, keyName, value);
           } else {
-            if (typeof this.setUnknownProperty === 'function' && !(keyName in this)) {
-              this.setUnknownProperty(keyName, value);
-            } else if (MANDATORY_SETTER) {
-              Ember.defineProperty(this, keyName, null, value); // setup mandatory setter
-            } else {
-              this[keyName] = value;
-            }
+            value = Ember.makeArray(value);
+          }
+        }
+
+        if (desc) {
+          desc.set(this, keyName, value);
+        } else {
+          if (typeof this.setUnknownProperty === 'function' && !(keyName in this)) {
+            this.setUnknownProperty(keyName, value);
+          } else if (MANDATORY_SETTER) {
+            Ember.defineProperty(this, keyName, null, value); // setup mandatory setter
+          } else {
+            this[keyName] = value;
           }
         }
       }
@@ -122,7 +113,7 @@ function makeCtor() {
     finishPartial(this, m);
     m.proto = proto;
     finishChains(this);
-    this.init.apply(this, arguments);
+    this.init();
     sendEvent(this, "init");
   };
 
@@ -135,7 +126,6 @@ function makeCtor() {
     wasApplied = false;
   };
   Class._initMixins = function(args) { initMixins = args; };
-  Class._initProperties = function(args) { initProperties = args; };
 
   Class.proto = function() {
     var superclass = Class.superclass;
@@ -470,15 +460,23 @@ var ClassMixin = Mixin.create({
   */
   create: function() {
     var C = this;
-    if (arguments.length>0) { this._initProperties(arguments); }
-    return new C();
+    if (arguments.length === 0) {
+      return new C();
+    } else if (arguments.length === 1) {
+      return new C(arguments[0]);
+    }
+    var props = {};
+    for (var i = 0, l = arguments.length; i < arguments.length; i++) {
+      Ember.merge(props, arguments[i]);
+    }
+    return new C(props);
   },
 
   /**
-    
+
     Augments a constructor's prototype with additional
     properties and functions:
-    
+
     ```javascript
     MyObject = Ember.Object.extend({
       name: 'an object'
@@ -498,7 +496,7 @@ var ClassMixin = Mixin.create({
 
     o.say("goodbye"); // logs "goodbye"
     ```
-    
+
     To add functions and properties to the constructor itself,
     see `reopenClass`
 
@@ -512,7 +510,7 @@ var ClassMixin = Mixin.create({
 
   /**
     Augments a constructor's own properties and functions:
-    
+
     ```javascript
     MyObject = Ember.Object.extend({
       name: 'an object'
@@ -522,17 +520,17 @@ var ClassMixin = Mixin.create({
     MyObject.reopenClass({
       canBuild: false
     });
-    
+
     MyObject.canBuild; // false
     o = MyObject.create();
     ```
-    
+
     To add functions and properties to instances of
     a constructor by extending the constructor's prototype
     see `reopen`
-    
+
     @method reopenClass
-  */  
+  */
   reopenClass: function() {
     reopen.apply(this.ClassMixin, arguments);
     applyMixin(this, arguments, false);

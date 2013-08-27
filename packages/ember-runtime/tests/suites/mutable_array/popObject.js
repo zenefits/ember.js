@@ -9,7 +9,7 @@ suite.test("[].popObject() => [] + returns undefined + NO notify", function() {
 
   obj = this.newObject([]);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.popObject(), undefined, 'popObject results');
 
@@ -29,7 +29,7 @@ suite.test("[X].popObject() => [] + notify", function() {
   after  = [];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   ret = obj.popObject();
 
@@ -51,7 +51,7 @@ suite.test("[A,B,C].popObject() => [A,B] + notify", function() {
   after  = [before[0], before[1]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   ret = obj.popObject();
 

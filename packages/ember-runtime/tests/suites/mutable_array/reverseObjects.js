@@ -13,7 +13,7 @@ suite.test("[A,B,C].reverseObjects() => [] + notify", function () {
   after  = [before[2], before[1], before[0]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   equal(obj.reverseObjects(), obj, 'return self');
 

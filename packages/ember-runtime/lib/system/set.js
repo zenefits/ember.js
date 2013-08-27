@@ -108,7 +108,11 @@ var get = Ember.get, set = Ember.set, guidFor = Ember.guidFor, isNone = Ember.is
   @uses Ember.Freezable
   @since Ember 0.9
 */
-Ember.Set = Ember.CoreObject.extend(Ember.MutableEnumerable, Ember.Copyable, Ember.Freezable,
+function Set(items) {
+  if (items) this.addObjects(items);
+}
+Ember.Set = Set;
+Ember.mixin(Set.prototype, Ember.MutableEnumerable, Ember.Copyable, Ember.Freezable,
   /** @scope Ember.Set.prototype */ {
 
   // ..........................................................

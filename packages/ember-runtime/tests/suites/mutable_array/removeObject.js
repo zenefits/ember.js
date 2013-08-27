@@ -18,7 +18,7 @@ suite.test("[A,B,C].removeObject(B) => [A,C] + notify", function() {
   after  = [before[0], before[2]];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   obj.removeObject(before[1]);
 
@@ -43,7 +43,7 @@ suite.test("[A,B,C].removeObject(D) => [A,B,C]", function() {
   item   = this.newFixture(1)[0];
   obj = this.newObject(before);
   observer = this.newObserver(obj, '[]', '@each', 'length', 'firstObject', 'lastObject');
-  obj.getProperties('firstObject', 'lastObject'); /* Prime the cache */
+  Ember.getProperties(obj, 'firstObject', 'lastObject'); /* Prime the cache */
 
   obj.removeObject(item); // note: item not in set
 
