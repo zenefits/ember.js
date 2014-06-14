@@ -40,9 +40,12 @@ merge(inBuffer, {
 
     //childView.renderToBuffer(buffer); // done later on the render loop
 
-    buffer.pushChildView(childView);
+    // FIXME: This is a temporary HTMLBars integration mechanism
+    if (!Ember.View.defaultTemplateEnv) {
+      buffer.pushChildView(childView);
 
-    view.propertyDidChange('childViews');
+      view.propertyDidChange('childViews');
+    }
 
     return childView;
   },
