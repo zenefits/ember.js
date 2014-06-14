@@ -1070,9 +1070,25 @@ var View = CoreView.extend({
       // the template with access to the view and render buffer.
 
       Ember.assert('template must be a function. Did you mean to call Ember.Handlebars.compile("...") or specify templateName instead?', typeof template === 'function');
+
       // The template should write directly to the render buffer instead
       // of returning a string.
-      output = template(context, { data: data });
+
+      // FIXME: This is a temporary HTMLBars integration mechanism
+      if (Ember.View.defaultTemplateEnv) {
+        Ember.View.defaultTemplateEnv.data = data;
+        var fragment = template(context, Ember.View.defaultTemplateEnv);
+
+        if (buffer._element) {
+          buffer._element.appendChild(fragment);
+        } else {
+          buffer._element = fragment;
+        }
+
+        Ember.View.defaultTemplateEnv.data = null;
+      } else {
+        output = template(context, { data: data });
+      }
 
       // If the template returned a string instead of writing to the buffer,
       // push the string onto the buffer.
