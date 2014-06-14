@@ -136,13 +136,18 @@ var iifeStart = writeFile('iife-start', '(function() {');
 var iifeStop  = writeFile('iife-stop', '})();');
 
 var vendoredPackages = {
-  'loader':           vendoredPackage('loader'),
-  'rsvp':             vendoredPackage('rsvp'),
-  'metamorph':        vendoredPackage('metamorph'),
-  'backburner':       vendoredPackage('backburner'),
-  'router':           vendoredPackage('router'),
-  'route-recognizer': vendoredPackage('route-recognizer'),
-  'morph':            vendoredPackage('morph'),
+  'loader':                vendoredPackage('loader'),
+  'rsvp':                  vendoredPackage('rsvp'),
+  'metamorph':             vendoredPackage('metamorph'),
+  'backburner':            vendoredPackage('backburner'),
+  'router':                vendoredPackage('router'),
+  'route-recognizer':      vendoredPackage('route-recognizer'),
+  'morph':                 vendoredPackage('morph'),
+  'htmlbars':              vendoredPackage('htmlbars'),
+  'htmlbars-compiler':     vendoredPackage('htmlbars-compiler'),
+  'handlebars':            vendoredPackage('handlebars'),
+  'simple-html-tokenizer': vendoredPackage('simple-html-tokenizer'),
+  'bound-templates':       vendoredPackage('bound-templates'),
 };
 
 var emberHandlebarsCompiler = pickFiles('packages/ember-handlebars-compiler/lib', {
