@@ -1,5 +1,6 @@
 import { content, element, subexpr, lookupHelper } from "bound-templates/runtime";
 import LazyValue from "bound-templates/lazy-value";
+import streamFor from "ember-htmlbars/hooks/streamFor";
 
 export var defaultEnv = {
   hooks: {
@@ -8,11 +9,7 @@ export var defaultEnv = {
     subexpr: subexpr,
     lookupHelper: lookupHelper,
 
-    streamFor: function(context, path) {
-      return new LazyValue(function() {
-        return context[path];
-      });
-    }
+    streamFor: streamFor
   },
 
   helpers: {
