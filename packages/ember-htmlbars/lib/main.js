@@ -1,5 +1,6 @@
 import { content, element, subexpr, lookupHelper } from "bound-templates/runtime";
 import LazyValue from "bound-templates/lazy-value";
+import { ifHelper, unlessHelper } from "ember-htmlbars/helpers/if_unless";
 import streamFor from "ember-htmlbars/hooks/streamFor";
 import locHelper from "ember-htmlbars/helpers/loc";
 import debuggerHelper from "ember-htmlbars/helpers/debugger";
@@ -18,6 +19,8 @@ export var defaultEnv = {
   helpers: {
     loc: locHelper,
     debugger: debuggerHelper,
-    log: logHelper
+    log: logHelper,
+    if: ifHelper,
+    unless: unlessHelper
   }
 };
