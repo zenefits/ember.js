@@ -1,5 +1,6 @@
 import { content, element, subexpr, lookupHelper } from "bound-templates/runtime";
 import LazyValue from "bound-templates/lazy-value";
+import { ifHelper, unlessHelper } from "ember-htmlbars/helpers/if_unless";
 import streamFor from "ember-htmlbars/hooks/streamFor";
 import locHelper from "ember-htmlbars/helpers/loc";
 import debuggerHelper from "ember-htmlbars/helpers/debugger";
@@ -32,7 +33,9 @@ export var defaultEnv = {
     textarea: textareaHelper,
     'bind-attr': bindAttrHelper,
     bindAttr: bindAttrHelperDeprecated,
-    action: actionHelper
+    action: actionHelper,
+    if: ifHelper,
+    unless: unlessHelper
   }
 };
 

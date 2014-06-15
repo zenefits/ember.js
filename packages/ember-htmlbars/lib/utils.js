@@ -33,8 +33,22 @@ merge(EmberObserverLazyValue.prototype, {
     addObserver(newObj, this.path, this, 'notify');
   },
 
+  dependentKeys: null,
+
+  addDependentKeys: function(_dependentKeys) {
+    var dependentKeys = this.dependentKeys = this.dependentKeys || [],
+        dependentKey;
+
+    for (var i = 0, l = _dependentKeys.length; i < l; i++) {
+      dependentKey = _dependentKeys[i];
+      addObserver(this.obj, this.path + '.' + dependentKey, this, 'notify');
+      dependentKeys.push(dependentKey);
+    }
+  },
+
   destroy: function() {
     removeObserver(this.obj, this.path, this, 'notify');
+    // TODO: teardown DKs
     this.obj = this.path = null;
     LazyValue.prototype.destroy.call(this);
   }
