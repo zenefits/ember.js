@@ -19,18 +19,18 @@ QUnit.module("Handlebars {{#if}} and {{#unless}} helpers", {
 });
 
 test("basics", function() {
-  var template = compile("{{#if truthy}}truthy{{else}}falsy{{/if}}");
+  var template = compile("{{#if isTrue}}{{truthyValue}}{{else}}{{falsyValue}}{{/if}}");
 
   view = Ember.View.create({
     template: template,
-    context: {truthy: true}
+    context: {isTrue: true, truthyValue: 'truthy', falsyValue: 'falsy'}
   });
 
   appendView(view);
 
   equal(view.$().text(), "truthy");
 
-  set(view, 'context.truthy', false);
+  set(view, 'context.isTrue', false);
 
   equal(view.$().text(), "falsy");
 });

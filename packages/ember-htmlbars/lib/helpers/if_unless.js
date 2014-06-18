@@ -25,8 +25,9 @@ export function ifHelper(params, options, env) {
   var preserveContext = true;
 
   var viewOptions = {
-    morph: options.morph,
+    _morph: options.morph,
     preserveContext: preserveContext,
+    parentContext: options.context,
     shouldDisplayFunc: shouldDisplayIfHelperContent,
     valueNormalizerFunc: shouldDisplayIfHelperContent,
     displayTemplate: options.render,

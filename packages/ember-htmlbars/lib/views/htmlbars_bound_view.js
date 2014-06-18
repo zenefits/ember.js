@@ -253,7 +253,7 @@ var _HtmlbarsBoundView = _MorphView.extend({
 
     var shouldDisplay = get(this, 'shouldDisplayFunc'),
         preserveContext = get(this, 'preserveContext'),
-        context = this.previousLazyValue.value();
+        context = this.parentContext;
 
     var inverseTemplate = get(this, 'inverseTemplate'),
         displayTemplate = get(this, 'displayTemplate');
