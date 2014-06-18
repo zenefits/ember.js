@@ -3,9 +3,11 @@
 import "ember-metal";
 import "ember-runtime";
 import "ember-handlebars";
+import "ember-htmlbars";
 import "ember-views";
 import "ember-routing";
 import "ember-routing-handlebars";
+// import "ember-routing-htmlbars";
 import "ember-application";
 import "ember-extension-support";
 

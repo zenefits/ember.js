@@ -123,7 +123,7 @@ var EmberRouter = EmberObject.extend(Evented, {
 
     this._setupRouter(router, location);
 
-    container.register('view:default', _MetamorphView);
+    container.register('view:default', EmberView.extend({isVirtual: true}));
     container.register('view:toplevel', EmberView.extend());
 
     location.onUpdateURL(function(url) {

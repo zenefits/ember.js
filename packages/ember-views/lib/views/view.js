@@ -1080,6 +1080,10 @@ var View = CoreView.extend({
           set(this, 'templateData', data);
         }
 
+        if (!this._parentView) {
+          set(this, 'template.isTop', true);
+        }
+
         Ember.View.defaultTemplateEnv.data = data;
         var fragment = template(this, Ember.View.defaultTemplateEnv);
 

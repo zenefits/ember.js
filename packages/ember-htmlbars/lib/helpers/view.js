@@ -28,7 +28,6 @@ function viewHelper(params, options, env) {
   hash._morph = options.morph;
   // hash.templateOptions = {data: options.data, helpers: options.helpers};
 
-
   var viewClassOrName = params[0],
       parentView = env.data.view,
       childView;
