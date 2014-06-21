@@ -27,7 +27,7 @@ export function ifHelper(params, options, env) {
   var viewOptions = {
     _morph: options.morph,
     preserveContext: preserveContext,
-    parentContext: options.context,
+    parentContext: get(options.context, 'context'), // FIXME: revisit this
     shouldDisplayFunc: shouldDisplayIfHelperContent,
     valueNormalizerFunc: shouldDisplayIfHelperContent,
     displayTemplate: options.render,
@@ -46,5 +46,32 @@ export function ifHelper(params, options, env) {
 }
 
 export function unlessHelper(params, options, env) {
+  Ember.assert("You must pass exactly one argument to the unless helper", arguments.length === 3);
+  Ember.assert("You must pass a block to the unless helper", options.render && options.render !== Handlebars.VM.noop);
 
+  options.helperName = options.helperName || ('unless ' + options.context);
+
+  // return bind.call(context, property, fn, true, shouldDisplayIfHelperContent, shouldDisplayIfHelperContent, ['isTruthy', 'length']);
+
+  var preserveContext = true;
+
+  var viewOptions = {
+    _morph: options.morph,
+    preserveContext: preserveContext,
+    parentContext: get(options.context, 'context'), // FIXME: revisit this
+    shouldDisplayFunc: shouldDisplayIfHelperContent,
+    valueNormalizerFunc: shouldDisplayIfHelperContent,
+    displayTemplate: options.inverse,
+    inverseTemplate: options.render,
+    lazyValue: params[0],
+    previousLazyValue: params[0],
+    isEscaped: !options.hash.unescaped,
+    templateData: env.data,
+    templateHash: options.hash,
+    helperName: options.helperName
+  };
+
+  var view = env.data.view;
+  var bindView = view.createChildView(_HtmlbarsBoundView, viewOptions);
+  view.appendChild(bindView);
 }

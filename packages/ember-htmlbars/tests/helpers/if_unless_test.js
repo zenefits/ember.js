@@ -8,7 +8,7 @@ import { fragmentHTML, appendView, destroyView, set } from "ember-htmlbars/tests
 
 var view;
 
-QUnit.module("Handlebars {{#if}} and {{#unless}} helpers", {
+QUnit.module("HTMLBars {{#if}} and {{#unless}} helpers", {
   setup: function() {
     Ember.View.defaultTemplateEnv = defaultEnv;
   },
@@ -47,31 +47,31 @@ test("basics", function() {
 //   equal(view.$().text(), 'foo: 42');
 // });
 
-// test("The `if` helper tests for `isTruthy` if available", function() {
-//   view = EmberView.create({
-//     truthy: EmberObject.create({ isTruthy: true }),
-//     falsy: EmberObject.create({ isTruthy: false }),
+test("The `if` helper tests for `isTruthy` if available", function() {
+  view = EmberView.create({
+    truthy: EmberObject.create({ isTruthy: true }),
+    falsy: EmberObject.create({ isTruthy: false }),
 
-//     template: compile('{{#if view.truthy}}Yep{{/if}}{{#if view.falsy}}Nope{{/if}}')
-//   });
+    template: compile('{{#if view.truthy}}Yep{{/if}}{{#if view.falsy}}Nope{{/if}}')
+  });
 
-//   appendView(view);
+  appendView(view);
 
-//   equal(view.$().text(), 'Yep');
-// });
+  equal(view.$().text(), 'Yep');
+});
 
-// test("The `if` helper does not print the contents for an object proxy without content", function() {
-//   view = EmberView.create({
-//     truthy: ObjectProxy.create({ content: {} }),
-//     falsy: ObjectProxy.create({ content: null }),
+test("The `if` helper does not print the contents for an object proxy without content", function() {
+  view = EmberView.create({
+    truthy: ObjectProxy.create({ content: {} }),
+    falsy: ObjectProxy.create({ content: null }),
 
-//     template: compile('{{#if view.truthy}}Yep{{/if}}{{#if view.falsy}}Nope{{/if}}')
-//   });
+    template: compile('{{#if view.truthy}}Yep{{/if}}{{#if view.falsy}}Nope{{/if}}')
+  });
 
-//   appendView(view);
+  appendView(view);
 
-//   equal(view.$().text(), 'Yep');
-// });
+  equal(view.$().text(), 'Yep');
+});
 
 // test("The `if` helper updates if an object proxy gains or loses context", function() {
 //   view = EmberView.create({
@@ -121,18 +121,18 @@ test("basics", function() {
 //   equal(view.$().text(), '');
 // });
 
-// test("The `if` helper updates when the value changes", function() {
-//   view = EmberView.create({
-//     conditional: true,
-//     template: compile('{{#if view.conditional}}Yep{{/if}}')
-//   });
-//   appendView(view);
-//   equal(view.$().text(), 'Yep');
-//   run(function(){
-//     view.set('conditional', false);
-//   });
-//   equal(view.$().text(), '');
-// });
+test("The `if` helper updates when the value changes", function() {
+  view = EmberView.create({
+    conditional: true,
+    template: compile('{{#if view.conditional}}Yep{{/if}}')
+  });
+  appendView(view);
+  equal(view.$().text(), 'Yep');
+  run(function(){
+    view.set('conditional', false);
+  });
+  equal(view.$().text(), '');
+});
 
 // test("The `unbound if` helper does not update when the value changes", function() {
 //   view = EmberView.create({
@@ -147,18 +147,18 @@ test("basics", function() {
 //   equal(view.$().text(), 'Yep');
 // });
 
-// test("The `unless` helper updates when the value changes", function() {
-//   view = EmberView.create({
-//     conditional: false,
-//     template: compile('{{#unless view.conditional}}Nope{{/unless}}')
-//   });
-//   appendView(view);
-//   equal(view.$().text(), 'Nope');
-//   run(function(){
-//     view.set('conditional', true);
-//   });
-//   equal(view.$().text(), '');
-// });
+test("The `unless` helper updates when the value changes", function() {
+  view = EmberView.create({
+    conditional: false,
+    template: compile('{{#unless view.conditional}}Nope{{/unless}}')
+  });
+  appendView(view);
+  equal(view.$().text(), 'Nope');
+  run(function(){
+    view.set('conditional', true);
+  });
+  equal(view.$().text(), '');
+});
 
 // test("The `unbound if` helper does not update when the value changes", function() {
 //   view = EmberView.create({
@@ -173,21 +173,21 @@ test("basics", function() {
 //   equal(view.$().text(), 'Nope');
 // });
 
-// test("The `if` helper ignores a controller option", function() {
-//   var lookupCalled = false;
+test("The `if` helper ignores a controller option", function() {
+  var lookupCalled = false;
 
-//   view = EmberView.create({
-//     container: {
-//       lookup: function() {
-//         lookupCalled = true;
-//       }
-//     },
-//     truthy: true,
+  view = EmberView.create({
+    container: {
+      lookup: function() {
+        lookupCalled = true;
+      }
+    },
+    truthy: true,
 
-//     template: compile('{{#if view.truthy controller="foo"}}Yep{{/if}}')
-//   });
+    template: compile('{{#if view.truthy controller="foo"}}Yep{{/if}}')
+  });
 
-//   appendView(view);
+  appendView(view);
 
-//   equal(lookupCalled, false, 'controller option should NOT be used');
-// });
+  equal(lookupCalled, false, 'controller option should NOT be used');
+});
