@@ -32,6 +32,8 @@ function viewHelper(params, options, env) {
       parentView = env.data.view,
       childView;
 
+  hash.templateData = env.data;
+
   if (!viewClassOrName) {
     hash.isView = true;
     childView = parentView.appendChild(Ember.View, hash);

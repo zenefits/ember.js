@@ -238,7 +238,7 @@ function collectionHelper(params, options, env) {
   if (emptyViewClass) { hash.emptyView = emptyViewClass; }
 
   if (hash.keyword) {
-    itemHash._context = this;
+    itemHash._context = alias('parentView.context'); // FIXME: double check this is right
   } else {
     itemHash._context = alias('content');
   }

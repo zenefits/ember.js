@@ -93,6 +93,7 @@ var EachView = CollectionView.extend(/*_Metamorph,*/ {
   // emptyViewClass: _MetamorphView,
 
   createChildView: function(view, attrs) {
+    attrs = attrs || {};
     attrs.isVirtual = true;
 
     view = this._super(view, attrs);
@@ -436,8 +437,18 @@ var EachView = CollectionView.extend(/*_Metamorph,*/ {
   @param [options.groupedRows] {boolean} enable normal item-by-item rendering when inside a `#group` helper
 */
 function eachHelper(params, options, env) {
-  var ctx, helperName = 'each';
+  var ctx, keyword, helperName = 'each';
   var path = params[0];
+
+  if (!options.hash) {
+    options.hash = {};
+  }
+
+  if (path && path.isKeyword) {
+    keyword = path;
+    path = keyword.lazyValue;
+    options.hash.keyword = keyword.to;
+  }
 
   // if (arguments.length === 4) {
   //   Ember.assert("If you pass more than one argument to the each helper, it must be in the form #each foo in bar", arguments[1] === "in");
@@ -461,9 +472,6 @@ function eachHelper(params, options, env) {
   //   helperName += ' ' + path;
   // }
 
-  if (!options.hash) {
-    options.hash = {};
-  }
   options.hash.dataSource = path;
   // Set up emptyView as a metamorph with no tag
   //options.hash.emptyViewClass = Ember._MetamorphView;
