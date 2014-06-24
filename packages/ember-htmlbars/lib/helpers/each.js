@@ -472,7 +472,11 @@ function eachHelper(params, options, env) {
   //   helperName += ' ' + path;
   // }
 
-  options.hash.dataSource = path;
+  if (path) {
+    options.hash.dataSource = path;
+  } else { // handle the argumentless case
+    options.hash.dataSourceBinding = '_parentView.context';
+  }
   // Set up emptyView as a metamorph with no tag
   //options.hash.emptyViewClass = Ember._MetamorphView;
 

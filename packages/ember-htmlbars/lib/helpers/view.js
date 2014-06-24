@@ -33,6 +33,7 @@ function viewHelper(params, options, env) {
       childView;
 
   hash.templateData = env.data;
+  hash._context = parentView.get('context');
 
   if (!viewClassOrName) {
     hash.isView = true;
