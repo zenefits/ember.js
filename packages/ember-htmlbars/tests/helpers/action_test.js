@@ -187,7 +187,7 @@ test("should target the current controller inside an {{each}} loop", function() 
 
   ActionHelper.registerAction = originalRegisterAction;
 });
-/*
+
 test("should target the with-controller inside an {{#with controller='person'}}", function() {
   var registeredTarget;
 
@@ -203,7 +203,7 @@ test("should target the with-controller inside an {{#with controller='person'}}"
 
   view = EmberView.create({
     container: container,
-    template: compile('{{#with view.person controller="person"}}{{action "editTodo"}}{{/with}}'),
+    template: compile('{{#with view.person controller="person"}}<div {{action "editTodo"}}></div>{{/with}}'),
     person: EmberObject.create(),
     controller: parentController
   });
@@ -250,7 +250,7 @@ test("should target the with-controller inside an {{each}} in a {{#with controll
 
   deepEqual(eventsCalled, ['robert', 'brian'], 'the events are fired properly');
 });
-*/
+
 test("should allow a target to be specified", function() {
   var registeredTarget;
 
@@ -631,7 +631,7 @@ test("should allow 'send' as action name (#594)", function() {
 
   ok(eventHandlerWasCalled, "The view's send method was called");
 });
-/*
+
 test("should send the view, event and current Handlebars context to the action", function() {
   var passedTarget;
   var passedContext;
@@ -659,7 +659,7 @@ test("should send the view, event and current Handlebars context to the action",
   strictEqual(passedTarget, aTarget, "the action is called with the target as this");
   strictEqual(passedContext, aContext, "the parameter is passed along");
 });
-*/
+
 test("should only trigger actions for the event they were registered on", function() {
   var editWasCalled = false;
 

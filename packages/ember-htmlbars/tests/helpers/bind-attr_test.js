@@ -360,10 +360,6 @@ test("should be able to bind classes to globals with {{bind-attr class}}", funct
   ok(!view.$('img').hasClass('is-open'), "removes the classname when the global property has changed");
 });
 
-/*
-
-NOTE: These tests require the {{with}} helper.
-
 test("should be able to bind element attributes using {{bind-attr}} inside a block", function() {
   var template = compile('{{#with view.content}}<img {{bind-attr src="url" alt="title"}}>{{/with}}');
 
@@ -386,8 +382,6 @@ test("should be able to bind element attributes using {{bind-attr}} inside a blo
 
   equal(view.$('img').attr('alt'), "El logo de Eember", "updates alt attribute when content's title attribute changes");
 });
-
-*/
 
 test("should be able to bind-attr to 'this' in an {{#each}} block", function() {
   view = EmberView.create({

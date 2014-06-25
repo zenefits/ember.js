@@ -35,17 +35,17 @@ test("basics", function() {
   equal(view.$().text(), "falsy");
 });
 
-// test("unless should keep the current context (#784)", function() {
-//   view = EmberView.create({
-//     o: EmberObject.create({foo: '42'}),
+test("unless should keep the current context (#784)", function() {
+  view = EmberView.create({
+    o: EmberObject.create({foo: '42'}),
 
-//     template: compile('{{#with view.o}}{{#view Ember.View}}{{#unless view.doesNotExist}}foo: {{foo}}{{/unless}}{{/view}}{{/with}}')
-//   });
+    template: compile('{{#with view.o}}{{#view Ember.View}}{{#unless view.doesNotExist}}foo: {{foo}}{{/unless}}{{/view}}{{/with}}')
+  });
 
-//   appendView(view);
+  appendView(view);
 
-//   equal(view.$().text(), 'foo: 42');
-// });
+  equal(view.$().text(), 'foo: 42');
+});
 
 test("The `if` helper tests for `isTruthy` if available", function() {
   view = EmberView.create({

@@ -11,6 +11,7 @@ import viewHelper from "ember-htmlbars/helpers/view";
 import { bindAttrHelper, bindAttrHelperDeprecated } from "ember-htmlbars/helpers/bind-attr";
 import { inputHelper, textareaHelper } from "ember-htmlbars/controls";
 import { actionHelper } from "ember-htmlbars/helpers/action";
+import withHelper from "ember-htmlbars/helpers/with";
 
 export var defaultEnv = {
   hooks: {
@@ -35,7 +36,8 @@ export var defaultEnv = {
     bindAttr: bindAttrHelperDeprecated,
     action: actionHelper,
     if: ifHelper,
-    unless: unlessHelper
+    unless: unlessHelper,
+    with: withHelper
   }
 };
 

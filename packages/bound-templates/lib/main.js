@@ -119,6 +119,11 @@ define("bound-templates/runtime",
         options.types.splice(0, 3, 'keyword');
       }
 
+      if (params.length === 3 && params[1] === "as") {
+        params.splice(0, 3, {isKeyword: true, from: params[0], to: params[2]});
+        options.types.splice(0, 3, 'keyword');
+      }
+
       // Convert ID params to streams
       for (var i = 0, l = params.length; i < l; i++) {
         if (options.types[i] === 'id') {
