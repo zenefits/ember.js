@@ -28,30 +28,33 @@ function viewHelper(params, options, env) {
   hash._morph = options.morph;
   // hash.templateOptions = {data: options.data, helpers: options.helpers};
 
-  var viewClassOrName = params[0],
+  var viewClassOrName = params[0] || Ember.View,
       parentView = env.data.view,
       childView;
 
   hash.templateData = env.data;
-  hash._context = parentView.get('context');
 
-  if (!viewClassOrName) {
-    hash.isView = true;
-    childView = parentView.appendChild(Ember.View, hash);
-  } else {
-    if (typeof viewClassOrName === 'string') {
-      if (CONST_REGEX.test(viewClassOrName)) {
-        viewClassOrName = get(null, viewClassOrName);
-      } else if (VIEW_KEYWORD_REGEX.test(viewClassOrName)) {
-        viewClassOrName = get(parentView, viewClassOrName.slice(5));
-      } else {
-        viewClassOrName = parentView.container.lookupFactory('view:' + viewClassOrName);
-      }
-    } else if (viewClassOrName.isLazyValue) {
-      viewClassOrName = viewClassOrName.value();
+  if (typeof viewClassOrName === 'string') {
+    if (CONST_REGEX.test(viewClassOrName)) {
+      viewClassOrName = get(null, viewClassOrName);
+    } else if (VIEW_KEYWORD_REGEX.test(viewClassOrName)) {
+      viewClassOrName = get(parentView, viewClassOrName.slice(5));
+    } else {
+      viewClassOrName = parentView.container.lookupFactory('view:' + viewClassOrName);
     }
-    childView = parentView.appendChild(viewClassOrName, hash);
+  } else if (viewClassOrName.isLazyValue) {
+    viewClassOrName = viewClassOrName.value();
   }
+
+  var newViewProto = viewClassOrName.proto ? viewClassOrName.proto() : viewClassOrName;
+
+  // We only want to override the `_context` computed property if there is
+  // no specified controller. See View#_context for more information.
+  if (!newViewProto.controller && !newViewProto.controllerBinding && !hash.controller && !hash.controllerBinding) {
+    hash._context = parentView.get('context');
+  }
+
+  childView = parentView.appendChild(viewClassOrName, hash);
 }
 
 export default viewHelper;
