@@ -245,26 +245,26 @@ var LinkView = Ember.LinkView = EmberComponent.extend({
       this.registerObserver(normalizedPath.root, normalizedPath.path, this, this._paramsChanged);
     }
 
-    var queryParamsObject = this.queryParamsObject;
-    if (queryParamsObject) {
-      var values = queryParamsObject.values;
+    // var queryParamsObject = this.queryParamsObject;
+    // if (queryParamsObject) {
+    //   var values = queryParamsObject.values;
 
-      // Install observers for all of the hash options
-      // provided in the (query-params) subexpression.
-      for (var k in values) {
-        if (!values.hasOwnProperty(k)) { continue; }
+    //   // Install observers for all of the hash options
+    //   // provided in the (query-params) subexpression.
+    //   for (var k in values) {
+    //     if (!values.hasOwnProperty(k)) { continue; }
 
-        if (queryParamsObject.types[k] === 'ID') {
-          normalizedPath = getNormalizedPath(values[k], helperParameters);
-          this.registerObserver(normalizedPath.root, normalizedPath.path, this, this._paramsChanged);
-        }
-      }
-    }
+    //     if (queryParamsObject.types[k] === 'ID') {
+    //       normalizedPath = getNormalizedPath(values[k], helperParameters);
+    //       this.registerObserver(normalizedPath.root, normalizedPath.path, this, this._paramsChanged);
+    //     }
+    //   }
+    // }
   },
 
   afterRender: function(){
     this._super.apply(this, arguments);
-    this._setupPathObservers();
+    // this._setupPathObservers();
   },
 
   /**
@@ -456,11 +456,27 @@ var LinkView = Ember.LinkView = EmberComponent.extend({
     @return {Array}
    */
   resolvedParams: computed('router.url', function() {
+    // debugger;
+
     var parameters = this.parameters,
         options = parameters.options,
         types = options.types,
         data = options.data,
         targetRouteName, models;
+
+    var self = this;
+    var paramValues = parameters.params.map(function(param) {
+      if (param && param.isLazyValue) {
+        // FIXME: This is megahax
+        param.onNotify(function() {
+          self._paramsChanged();
+        });
+        return param.value();
+      }
+      return param;
+    });
+
+    debugger;
 
     var onlyQueryParamsSupplied = (parameters.params.length === 0);
     if (onlyQueryParamsSupplied) {
@@ -468,7 +484,7 @@ var LinkView = Ember.LinkView = EmberComponent.extend({
       targetRouteName = get(appController, 'currentRouteName');
       models = [];
     } else {
-      models = resolveParams(parameters.context, parameters.params, { types: types, data: data });
+      models = paramValues;
       targetRouteName = models.shift();
     }
 
@@ -495,6 +511,8 @@ var LinkView = Ember.LinkView = EmberComponent.extend({
     var resolvedParams = get(this, 'resolvedParams'),
         router = get(this, 'router'),
         namedRoute = resolvedParams.targetRouteName;
+
+    // debugger;
 
     if (!namedRoute) { return; }
 
@@ -524,6 +542,8 @@ var LinkView = Ember.LinkView = EmberComponent.extend({
 
     var router = get(this, 'router'),
         loadedParams = get(this, 'loadedParams');
+
+    // debugger;
 
     if (!loadedParams) {
       return get(this, 'loadingHref');
@@ -830,12 +850,15 @@ if (Ember.FEATURES.isEnabled("ember-routing-linkto-target-attribute")) {
   @see {Ember.LinkView}
 */
 function linkToHelper(params, options, env) {
+  // debugger;
+
   var name = params[0];
   var hash = options.hash;
 
   Ember.assert("You must provide one or more parameters to the link-to helper.", params.length);
 
   if (params[params.length - 1] instanceof QueryParams) {
+    debugger;
     hash.queryParamsObject = params.pop();
   }
 
@@ -848,7 +871,7 @@ function linkToHelper(params, options, env) {
     if (linkType === 'ID') {
       options.linkTextPath = linkTitle;
       options.render = function() {
-        return EmberHandlebars.getEscaped(context, linkTitle, options);
+        return linkTitle;
       };
     } else {
       options.render = function() {
@@ -870,14 +893,17 @@ function linkToHelper(params, options, env) {
 
 
 if (Ember.FEATURES.isEnabled("query-params-new")) {
-  EmberHandlebars.registerHelper('query-params', function queryParamsHelper(options) {
-    Ember.assert(fmt("The `query-params` helper only accepts hash parameters, e.g. (query-params queryParamPropertyName='%@') as opposed to just (query-params '%@')", [options, options]), arguments.length === 1);
+  function queryParamsHelper(params, options, env) {
+    debugger;
+    if (params.length > 0) {
+      var originalPath = params[0]._originalPath;
+      Ember.assert(fmt("The `query-params` helper only accepts hash parameters, e.g. (query-params queryParamPropertyName='%@') as opposed to just (query-params '%@')", [originalPath, originalPath]), params.length === 0);
+    }
 
     return QueryParams.create({
-      values: options.hash,
-      types: options.hashTypes
+      values: options.hash
     });
-  });
+  }
 }
 
 /**
@@ -906,12 +932,14 @@ function getResolvedQueryParams(linkView, targetRouteName) {
   for (var key in rawParams) {
     if (!rawParams.hasOwnProperty(key)) { continue; }
 
-    var value = rawParams[key],
-        type = queryParamsObject.types[key];
+    var value = rawParams[key];
 
-    if (type === 'ID') {
-      var normalizedPath = getNormalizedPath(value, helperParameters);
-      value = EmberHandlebars.get(normalizedPath.root, normalizedPath.path, helperParameters.options);
+    if (value && value.isLazyValue) {
+      // FIXME: megahax
+      value.onNotify(function() {
+        linkView._paramsChanged();
+      });
+      value = value.value();
     }
     resolvedQueryParams[key] = value;
   }
@@ -946,5 +974,6 @@ function shallowEqual(a, b) {
 export {
   LinkView,
   deprecatedLinkToHelper,
-  linkToHelper
+  linkToHelper,
+  queryParamsHelper
 };

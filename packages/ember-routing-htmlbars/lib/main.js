@@ -18,7 +18,8 @@ import {
 import {
   deprecatedLinkToHelper,
   linkToHelper,
-  LinkView
+  LinkView,
+  queryParamsHelper
 } from "ember-routing-htmlbars/helpers/link-to";
 
 import {
@@ -45,6 +46,7 @@ import { defaultEnv } from "ember-htmlbars";
 
 defaultEnv.helpers.outlet = outletHelper;
 defaultEnv.helpers['link-to'] = linkToHelper;
+defaultEnv.helpers['query-params'] = queryParamsHelper;
 
 export { defaultEnv };
 export default Ember;
