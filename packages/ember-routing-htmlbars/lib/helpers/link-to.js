@@ -18,6 +18,9 @@ import {
   resolvePaths,
   routeArgs
 } from "ember-routing-handlebars/helpers/shared";
+import { Morph } from "morph";
+import ControllerMixin from "ember-runtime/mixins/controller";
+import streamFor from "ember-htmlbars/hooks/streamFor";
 
 /**
 @module ember
@@ -25,8 +28,6 @@ import {
 */
 
 var slice = [].slice;
-
-requireModule('ember-handlebars');
 
 var numberOfContextsAcceptedByHandler = function(handler, handlerInfos) {
   var req = 0;
@@ -456,8 +457,6 @@ var LinkView = Ember.LinkView = EmberComponent.extend({
     @return {Array}
    */
   resolvedParams: computed('router.url', function() {
-    // debugger;
-
     var parameters = this.parameters,
         options = parameters.options,
         types = options.types,
@@ -467,16 +466,18 @@ var LinkView = Ember.LinkView = EmberComponent.extend({
     var self = this;
     var paramValues = parameters.params.map(function(param) {
       if (param && param.isLazyValue) {
+        // If `this` was passed in as an argument and is a controller, transform it into the controller's model property
+        if (param._originalPath === "" && ControllerMixin.detect(param.value())) {
+          param = streamFor(self._parentView, "model"); // TODO: this sucks, need the parent's context since this is a component
+        }
         // FIXME: This is megahax
         param.onNotify(function() {
           self._paramsChanged();
         });
-        return param.value();
+        param = unwrap(param.value());
       }
       return param;
     });
-
-    debugger;
 
     var onlyQueryParamsSupplied = (parameters.params.length === 0);
     if (onlyQueryParamsSupplied) {
@@ -512,8 +513,6 @@ var LinkView = Ember.LinkView = EmberComponent.extend({
         router = get(this, 'router'),
         namedRoute = resolvedParams.targetRouteName;
 
-    // debugger;
-
     if (!namedRoute) { return; }
 
     Ember.assert(fmt("The attempt to link-to route '%@' failed. " +
@@ -542,8 +541,6 @@ var LinkView = Ember.LinkView = EmberComponent.extend({
 
     var router = get(this, 'router'),
         loadedParams = get(this, 'loadedParams');
-
-    // debugger;
 
     if (!loadedParams) {
       return get(this, 'loadingHref');
@@ -850,34 +847,36 @@ if (Ember.FEATURES.isEnabled("ember-routing-linkto-target-attribute")) {
   @see {Ember.LinkView}
 */
 function linkToHelper(params, options, env) {
-  // debugger;
-
   var name = params[0];
   var hash = options.hash;
 
   Ember.assert("You must provide one or more parameters to the link-to helper.", params.length);
 
   if (params[params.length - 1] instanceof QueryParams) {
-    debugger;
     hash.queryParamsObject = params.pop();
   }
 
-  hash.disabledBinding = hash.disabledWhen;
+  hash.disabled = hash.disabledWhen;
 
   if (!options.render) {
     var linkTitle = params.shift();
-    var linkType = options.types.shift();
-    var context = options.context;
-    if (linkType === 'ID') {
-      options.linkTextPath = linkTitle;
-      options.render = function() {
-        return linkTitle;
-      };
-    } else {
-      options.render = function() {
-        return linkTitle;
-      };
-    }
+    options.render = function(context, env) {
+      var element = document.createDocumentFragment();
+      var start = document.createTextNode('');
+      var end = document.createTextNode('');
+      element.appendChild(start);
+      element.appendChild(end);
+      var morph = new Morph(element, start, end);
+      if (linkTitle && linkTitle.isLazyValue) {
+        morph.update(linkTitle.value());
+        linkTitle.onNotify(function() {
+          morph.update(linkTitle.value());
+        });
+      } else {
+        morph.update(linkTitle);
+      }
+      return element;
+    };
   }
 
   hash.parameters = {
@@ -891,10 +890,9 @@ function linkToHelper(params, options, env) {
   return env.helpers.view([LinkView], options, env);
 }
 
-
+var queryParamsHelper;
 if (Ember.FEATURES.isEnabled("query-params-new")) {
-  function queryParamsHelper(params, options, env) {
-    debugger;
+  queryParamsHelper = function queryParamsHelper(params, options, env) {
     if (params.length > 0) {
       var originalPath = params[0]._originalPath;
       Ember.assert(fmt("The `query-params` helper only accepts hash parameters, e.g. (query-params queryParamPropertyName='%@') as opposed to just (query-params '%@')", [originalPath, originalPath]), params.length === 0);
@@ -903,7 +901,7 @@ if (Ember.FEATURES.isEnabled("query-params-new")) {
     return QueryParams.create({
       values: options.hash
     });
-  }
+  };
 }
 
 /**
@@ -929,6 +927,10 @@ function getResolvedQueryParams(linkView, targetRouteName) {
   if (!queryParamsObject) { return resolvedQueryParams; }
   var rawParams = queryParamsObject.values;
 
+  function notifyFn() {
+    linkView._paramsChanged();
+  }
+
   for (var key in rawParams) {
     if (!rawParams.hasOwnProperty(key)) { continue; }
 
@@ -936,9 +938,7 @@ function getResolvedQueryParams(linkView, targetRouteName) {
 
     if (value && value.isLazyValue) {
       // FIXME: megahax
-      value.onNotify(function() {
-        linkView._paramsChanged();
-      });
+      value.onNotify(notifyFn);
       value = value.value();
     }
     resolvedQueryParams[key] = value;
@@ -969,6 +969,14 @@ function shallowEqual(a, b) {
     if (b.hasOwnProperty(k) && a[k] !== b[k]) { return false; }
   }
   return true;
+}
+
+function unwrap(obj) {
+  var ret = obj;
+  if (ControllerMixin.detect(obj)) {
+    ret = unwrap(Ember.get(obj, 'model'));
+  }
+  return ret;
 }
 
 export {

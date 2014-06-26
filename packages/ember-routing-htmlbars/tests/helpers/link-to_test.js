@@ -634,8 +634,6 @@ test("Quoteless route param performs property lookup", function() {
 
   assertEquality('/');
 
-  debugger;
-
   var controller = container.lookup('controller:index'),
       view = Ember.View.views['index-view'];
   Ember.run(function() {

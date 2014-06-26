@@ -9,6 +9,7 @@ import { set } from "ember-metal/property_set";
 import { isNone } from 'ember-metal/is_none';
 
 import { computed } from "ember-metal/computed";
+import { Morph } from "morph";
 
 var a_slice = Array.prototype.slice;
 
@@ -118,9 +119,18 @@ var Component = View.extend(TargetActionSupport, ComponentTemplateDeprecation, {
   },
 
   defaultLayout: function(context, env){
+    var element = document.createDocumentFragment();
+    var start = document.createTextNode('');
+    var end = document.createTextNode('');
+    element.appendChild(start);
+    element.appendChild(end);
+    var morph = new Morph(element, start, end);
     // HTMLBARS-TODO: Implement yield.
     // Ember.Handlebars.helpers['yield'].call(context, options);
-    return document.createDocumentFragment();
+
+    env.data.view._yield(context, env, morph);
+
+    return element;
   },
 
   /**
@@ -170,8 +180,8 @@ var Component = View.extend(TargetActionSupport, ComponentTemplateDeprecation, {
     };
   },
 
-  _yield: function(context, options) {
-    var view = options.data.view,
+  _yield: function(context, env, morph) {
+    var view = env.data.view,
         parentView = this._parentView,
         template = get(this, 'template');
 
@@ -179,13 +189,14 @@ var Component = View.extend(TargetActionSupport, ComponentTemplateDeprecation, {
       Ember.assert("A Component must have a parent view in order to yield.", parentView);
 
       view.appendChild(View, {
+        _morph: morph,
         isVirtual: true,
         tagName: '',
         _contextView: parentView,
         template: template,
-        context: options.data.insideGroup ? get(this, 'origContext') : get(parentView, 'context'),
+        context: env.data.insideGroup ? get(this, 'origContext') : get(parentView, 'context'),
         controller: get(parentView, 'controller'),
-        templateData: { keywords: parentView.cloneKeywords(), insideGroup: options.data.insideGroup }
+        templateData: { keywords: parentView.cloneKeywords(), insideGroup: env.data.insideGroup }
       });
     }
   },

@@ -46,6 +46,7 @@ import { defaultEnv } from "ember-htmlbars";
 
 defaultEnv.helpers.outlet = outletHelper;
 defaultEnv.helpers['link-to'] = linkToHelper;
+defaultEnv.helpers.linkTo = linkToHelper;
 defaultEnv.helpers['query-params'] = queryParamsHelper;
 
 export { defaultEnv };
