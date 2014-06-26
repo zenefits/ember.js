@@ -36,13 +36,16 @@ function streamFor(view, path) {
   return stream;
 }
 
-var CONST_REGEX = /^[A-Z][^.]*\./;
+var CONST_REGEX = /(^[A-Z][^.]*)\.(.*)/;
 
 export default function STREAM_FOR(context, path) {
-  if (CONST_REGEX.test(path)) {
-    return new LazyValue(function() {
-      return get(null, path);
-    });
+  if (path === "this") { path = ""; }
+
+  if (CONST_REGEX.test(path)) { // TODO: revisit
+    var matches = path.match(CONST_REGEX);
+    var rootPath = matches[1];
+    var root = get(null, rootPath);
+    return new EmberObserverLazyValue(root, matches[2]);
   } else if (context.isView) {
     return streamFor(context, path);
   } else {
