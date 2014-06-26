@@ -7,6 +7,7 @@ import logHelper from "ember-htmlbars/helpers/log";
 import { eachHelper } from "ember-htmlbars/helpers/each";
 import collectionHelper from "ember-htmlbars/helpers/collection";
 import viewHelper from "ember-htmlbars/helpers/view";
+import { bindAttrHelper, bindAttrHelperDeprecated } from "ember-htmlbars/helpers/bind-attr";
 import { inputHelper, textareaHelper } from "ember-htmlbars/controls";
 
 export var defaultEnv = {
@@ -27,6 +28,8 @@ export var defaultEnv = {
     collection: collectionHelper,
     each: eachHelper,
     input: inputHelper,
-    textarea: textareaHelper
+    textarea: textareaHelper,
+    'bind-attr': bindAttrHelper,
+    bindAttr: bindAttrHelperDeprecated
   }
 };
