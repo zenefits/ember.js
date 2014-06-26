@@ -7,6 +7,7 @@ import logHelper from "ember-htmlbars/helpers/log";
 import { eachHelper } from "ember-htmlbars/helpers/each";
 import collectionHelper from "ember-htmlbars/helpers/collection";
 import viewHelper from "ember-htmlbars/helpers/view";
+import { inputHelper, textareaHelper } from "ember-htmlbars/controls";
 
 export var defaultEnv = {
   hooks: {
@@ -24,6 +25,8 @@ export var defaultEnv = {
     log: logHelper,
     view: viewHelper,
     collection: collectionHelper,
-    each: eachHelper
+    each: eachHelper,
+    input: inputHelper,
+    textarea: textareaHelper
   }
 };
