@@ -1,4 +1,4 @@
-define("bound-templates", 
+define("bound-templates",
   ["htmlbars-compiler/compiler","bound-templates/lazy-value","exports"],
   function(__dependency1__, __dependency2__, __exports__) {
     "use strict";
@@ -12,7 +12,7 @@ define("bound-templates",
     __exports__.compile = compile;__exports__.LazyValue = LazyValue;
   });
 
-define("bound-templates/lazy-value", 
+define("bound-templates/lazy-value",
   ["exports"],
   function(__exports__) {
     "use strict";
@@ -103,7 +103,7 @@ define("bound-templates/lazy-value",
     __exports__["default"] = LazyValue;
   });
 
-define("bound-templates/runtime", 
+define("bound-templates/runtime",
   ["bound-templates/lazy-value","exports"],
   function(__dependency1__, __exports__) {
     "use strict";
@@ -111,10 +111,19 @@ define("bound-templates/runtime",
 
     function streamifyArgs(context, params, options, env) {
       var hooks = env.hooks;
+
+      // TODO: Revisit keyword rewriting approach
+      if (params.length === 3 && params[1] === "in") {
+        params.splice(0, 3, {isKeyword: true, from: params[2], to: params[0]});
+        options.types.splice(0, 3, 'keyword');
+      }
+
       // Convert ID params to streams
       for (var i = 0, l = params.length; i < l; i++) {
         if (options.types[i] === 'id') {
           params[i] = hooks.streamFor(context, params[i]);
+        } else if (options.types[i] === 'keyword') {
+          params[i].lazyValue = hooks.streamFor(context, params[i].from);
         }
       }
 
