@@ -7,13 +7,20 @@ import logHelper from "ember-htmlbars/helpers/log";
 import { eachHelper } from "ember-htmlbars/helpers/each";
 import collectionHelper from "ember-htmlbars/helpers/collection";
 import viewHelper from "ember-htmlbars/helpers/view";
+import emberLookupHelper from "ember-htmlbars/hooks/lookupHelper";
 
 export var defaultEnv = {
   hooks: {
     content: content,
     element: element,
     subexpr: subexpr,
-    lookupHelper: lookupHelper,
+    lookupHelper: function(name, env) {
+      var helper = emberLookupHelper(name, env);
+      if (!helper) {
+        helper = lookupHelper(name, env);
+      }
+      return helper;
+    },
 
     streamFor: streamFor
   },

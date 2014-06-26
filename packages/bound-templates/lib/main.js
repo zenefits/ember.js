@@ -27,7 +27,7 @@ define("bound-templates/lazy-value",
 
     LazyValue.prototype = {
       isLazyValue: true,
-      parent: null, // TODO: is parent even needed? could be modeled as a subscriber
+      parents: null, // TODO: is parent even needed? could be modeled as a subscriber
       children: null,
       cache: NIL,
       valueFn: null,
@@ -62,22 +62,40 @@ define("bound-templates/lazy-value",
           children.push(value);
         }
 
-        if (value && value.isLazyValue) { value.parent = this; }
+        if (value && value.isLazyValue) {
+          value.addParent(this);
+        }
+
+        return this;
+      },
+
+      addParent: function(parent) {
+        var parents = this.parents;
+
+        if (parents) {
+          parents.push(parent);
+        } else {
+          parents = this.parents = [parent];
+        }
 
         return this;
       },
 
       notify: function(sender) {
         var cache = this.cache,
-            parent,
+            parents,
             subscribers;
 
         if (cache !== NIL) {
-          parent = this.parent;
+          parents = this.parents;
           subscribers = this.subscribers;
           cache = this.cache = NIL;
 
-          if (parent) { parent.notify(this); }
+          if (parents) {
+            for (var i = 0, l = parents.length; i < l; i++) {
+              parents[i].notify(this);
+            }
+          }
           if (!subscribers) { return; }
           for (var i = 0, l = subscribers.length; i < l; i++) {
             subscribers[i](this); // TODO: should we worry about exception handling?
@@ -96,7 +114,8 @@ define("bound-templates/lazy-value",
       },
 
       destroy: function() {
-        this.parent = this.children = this.cache = this.valueFn = this.subscribers = this._childValues = null;
+        // TODO: we need ref counting to properly destroy since we're sharing LVs
+        this.parents = this.children = this.cache = this.valueFn = this.subscribers = this._childValues = null;
       }
     };
 
@@ -108,6 +127,7 @@ define("bound-templates/runtime",
   function(__dependency1__, __exports__) {
     "use strict";
     var LazyValue = __dependency1__["default"];
+    var IS_BINDING = /^.+Binding$/;
 
     function streamifyArgs(context, params, options, env) {
       var hooks = env.hooks;
@@ -133,15 +153,24 @@ define("bound-templates/runtime",
       for (var key in hash) {
         if (hashTypes[key] === 'id') {
           hash[key] = hooks.streamFor(context, hash[key]);
+        } else if (hashTypes[key] === 'string' && key !== 'classBinding' && key !== 'itemClassBinding' && IS_BINDING.test(key)) {
+          hash[key.slice(0, -7)] = hooks.streamFor(context, hash[key]);
+          delete hash[key];
         }
       }
     }
 
     function content(morph, path, context, params, options, env) {
-      var hooks = env.hooks;
+      var hooks = env.hooks, isUnbound = false;
 
       // TODO: just set escaped on the morph in HTMLBars
       morph.escaped = options.escaped;
+
+      if (path === 'unbound') {
+        isUnbound = true;
+        path = params.shift();
+        options.types.shift();
+      }
       var lazyValue;
       var helper = hooks.lookupHelper(path, env);
       if (helper) {
@@ -150,14 +179,23 @@ define("bound-templates/runtime",
         options.context = context; // FIXME: this kinda sucks
         lazyValue = helper(params, options, env);
       } else {
+        if (isUnbound && params.length > 0) {
+          throw new Error('Could not find helper named: ' + path);
+        }
         lazyValue = hooks.streamFor(context, path);
       }
-      if (lazyValue) {
-        lazyValue.onNotify(function(sender) {
-          morph.update(sender.value());
-        });
 
+      if (lazyValue) {
         morph.update(lazyValue.value());
+
+        if (isUnbound) {
+          // TODO: lazyValues need ref counting
+          // lazyValue.destroy();
+        } else {
+          lazyValue.onNotify(function(sender) {
+            morph.update(sender.value());
+          });
+        }
       }
     }
 
@@ -186,9 +224,11 @@ define("bound-templates/runtime",
     }
 
     __exports__.subexpr = subexpr;function lookupHelper(name, env) {
+      var helper = env.helpers[name];
+      if (helper) { return helper; }
+
       if (name === 'concat') { return concat; }
       if (name === 'attribute') { return attribute; }
-      return env.helpers[name];
     }
 
     __exports__.lookupHelper = lookupHelper;function attribute(element, params, options) {
