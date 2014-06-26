@@ -9,6 +9,7 @@ import collectionHelper from "ember-htmlbars/helpers/collection";
 import viewHelper from "ember-htmlbars/helpers/view";
 import { bindAttrHelper, bindAttrHelperDeprecated } from "ember-htmlbars/helpers/bind-attr";
 import { inputHelper, textareaHelper } from "ember-htmlbars/controls";
+import actionHelper from "ember-htmlbars/helpers/action";
 
 export var defaultEnv = {
   hooks: {
@@ -30,6 +31,7 @@ export var defaultEnv = {
     input: inputHelper,
     textarea: textareaHelper,
     'bind-attr': bindAttrHelper,
-    bindAttr: bindAttrHelperDeprecated
+    bindAttr: bindAttrHelperDeprecated,
+    action: actionHelper
   }
 };
