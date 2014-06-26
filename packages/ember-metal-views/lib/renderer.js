@@ -187,7 +187,9 @@ function Renderer_remove(_view, shouldDestroy) {
 
 function Renderer_insertElement(view, parentView, element, index) {
   if (view._morph) {
-    view._morph.update(element);
+    if (element) {
+      view._morph.update(element);
+    }
   } else if (parentView) {
     if (index === -1) {
       view._morph = parentView._childViewsMorph.append(element);
