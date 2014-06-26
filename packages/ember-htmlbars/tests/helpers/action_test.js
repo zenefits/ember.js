@@ -120,9 +120,7 @@ test("should by default target the view's controller", function() {
 
   ActionHelper.registerAction = originalRegisterAction;
 });
-
 /*
-
 test("Inside a yield, the target points at the original target", function() {
   var controller = {}, watted = false;
 
@@ -157,7 +155,7 @@ test("Inside a yield, the target points at the original target", function() {
 
   equal(watted, true, "The action was called on the right context");
 });
-
+*/
 test("should target the current controller inside an {{each}} loop", function() {
   var registeredTarget;
 
@@ -180,7 +178,7 @@ test("should target the current controller inside an {{each}} loop", function() 
 
   view = EmberView.create({
     controller: controller,
-    template: compile('{{#each controller}}{{action "editTodo"}}{{/each}}')
+    template: compile('{{#each controller}}<div {{action "editTodo"}}></div>{{/each}}')
   });
 
   appendView();
@@ -189,7 +187,7 @@ test("should target the current controller inside an {{each}} loop", function() 
 
   ActionHelper.registerAction = originalRegisterAction;
 });
-
+/*
 test("should target the with-controller inside an {{#with controller='person'}}", function() {
   var registeredTarget;
 
@@ -252,9 +250,7 @@ test("should target the with-controller inside an {{each}} in a {{#with controll
 
   deepEqual(eventsCalled, ['robert', 'brian'], 'the events are fired properly');
 });
-
 */
-
 test("should allow a target to be specified", function() {
   var registeredTarget;
 
@@ -468,8 +464,6 @@ test("the event should not bubble if `bubbles=false` is passed", function() {
   equal(originalEventHandlerWasCalled, true, "The original event handler was called");
 });
 
-/*
-
 test("should work properly in an #each block", function() {
   var eventHandlerWasCalled = false;
 
@@ -489,7 +483,7 @@ test("should work properly in an #each block", function() {
 
   ok(eventHandlerWasCalled, "The event handler was called");
 });
-
+/*
 test("should work properly in a #with block", function() {
   var eventHandlerWasCalled = false;
 
@@ -509,11 +503,7 @@ test("should work properly in a #with block", function() {
 
   ok(eventHandlerWasCalled, "The event handler was called");
 });
-
 */
-
-/*
-
 // HTMLBARS-TODO: Fix this test.
 test("should unregister event handlers on rerender", function() {
   var eventHandlerWasCalled = false;
@@ -537,8 +527,6 @@ test("should unregister event handlers on rerender", function() {
 
   ok(ActionHelper.registeredActions[newActionId], "After rerender completes, a new event handler was added");
 });
-
-*/
 
 test("should unregister event handlers on inside virtual views", function() {
   var things = Ember.A([
@@ -643,9 +631,7 @@ test("should allow 'send' as action name (#594)", function() {
 
   ok(eventHandlerWasCalled, "The view's send method was called");
 });
-
 /*
-
 test("should send the view, event and current Handlebars context to the action", function() {
   var passedTarget;
   var passedContext;
@@ -673,9 +659,7 @@ test("should send the view, event and current Handlebars context to the action",
   strictEqual(passedTarget, aTarget, "the action is called with the target as this");
   strictEqual(passedContext, aContext, "the parameter is passed along");
 });
-
 */
-
 test("should only trigger actions for the event they were registered on", function() {
   var editWasCalled = false;
 
@@ -891,8 +875,6 @@ test("a quoteless parameter should allow dynamic lookup of the actionName", func
   deepEqual(actionOrder, ['whompWhomp', 'sloopyDookie', 'biggityBoom'], 'action name was looked up properly');
 });
 
-/*
-
 test("a quoteless parameter should lookup actionName in context", function(){
   expect(4);
   var lastAction, actionOrder = [];
@@ -940,7 +922,7 @@ test("a quoteless parameter should lookup actionName in context", function(){
 
   deepEqual(actionOrder, ['whompWhomp', 'sloopyDookie', 'biggityBoom'], 'action name was looked up properly');
 });
-
+/*
 test("a quoteless parameter should resolve actionName, including path", function(){
   expect(4);
   var lastAction, actionOrder = [];
@@ -988,11 +970,7 @@ test("a quoteless parameter should resolve actionName, including path", function
 
   deepEqual(actionOrder, ['whompWhomp', 'sloopyDookie', 'biggityBoom'], 'action name was looked up properly');
 });
-
 */
-
-/*
-
 // HTMLBARS-TODO: How do we want to deal with quoteless params?
 
 test("a quoteless parameter that also exists as an action name functions properly", function(){
@@ -1093,27 +1071,25 @@ test("a quoteless parameter that also exists as an action name in deprecated act
   Ember.FEATURES['ember-routing-drop-deprecated-action-style'] = dropDeprecatedActionStyleOrig;
 });
 
-*/
-
-/*
-
 QUnit.module("Ember.Handlebars - action helper - deprecated invoking directly on target", {
   setup: function() {
-    originalActionHelper = EmberHandlebars.helpers['action'];
-    EmberHandlebars.registerHelper('action', actionHelper);
+    Ember.View.defaultTemplateEnv = defaultEnv;
+    originalActionHelper = defaultEnv.helpers.action;
+    defaultEnv.helpers.action = actionHelper;
 
     dispatcher = EventDispatcher.create();
     dispatcher.setup();
   },
 
   teardown: function() {
-    delete EmberHandlebars.helpers['action'];
-    EmberHandlebars.helpers['action'] = originalActionHelper;
+    delete defaultEnv.helpers.action;
+    defaultEnv.helpers.action = originalActionHelper;
 
     run(function() {
       dispatcher.destroy();
       if (view) { view.destroy(); }
     });
+    Ember.View.defaultTemplateEnv = null;
   }
 });
 
@@ -1164,5 +1140,3 @@ test("should respect preventDefault=false option if provided", function(){
 
   equal(event.isDefaultPrevented(), false, "should not preventDefault");
 });
-
-/**/

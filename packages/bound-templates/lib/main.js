@@ -33,6 +33,7 @@ define("bound-templates/lazy-value",
       valueFn: null,
       subscribers: null, // TODO: do we need multiple subscribers?
       _childValues: null, // just for reusing the array, might not work well if children.length changes after computation
+      _originalPath: null, // helps handle deprecated unquoted helper usage
 
       value: function() {
         var cache = this.cache;
