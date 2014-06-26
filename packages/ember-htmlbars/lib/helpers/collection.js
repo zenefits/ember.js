@@ -20,6 +20,11 @@ import { computed } from "ember-metal/computed";
 import CollectionView from "ember-views/views/collection_view";
 
 var alias = computed.alias;
+
+// FIXME: duplicated in view helper
+var CONST_REGEX = /^[A-Z][^.]*\./;
+var VIEW_KEYWORD_REGEX = /^view\./;
+
 /**
   `{{collection}}` is a `Ember.Handlebars` helper for adding instances of
   `Ember.CollectionView` to a template. See [Ember.CollectionView](/api/classes/Ember.CollectionView.html)
@@ -160,6 +165,20 @@ function collectionHelper(params, options, env) {
   var inverse = options.inverse;
   var view = env.data.view;
 
+  // TODO: this is duplicated from the view helper
+  if (typeof collectionClass === 'string') {
+    if (CONST_REGEX.test(collectionClass)) {
+      collectionClass = get(null, collectionClass);
+    } else if (VIEW_KEYWORD_REGEX.test(collectionClass)) {
+      collectionClass = get(view, collectionClass.slice(5));
+    } else {
+      collectionClass = view.container.lookupFactory('view:' + collectionClass);
+    }
+  } else if (collectionClass && collectionClass.isLazyValue) {
+    collectionClass = collectionClass.value();
+  }
+
+  if (!collectionClass) { collectionClass = CollectionView; }
 
   var controller, container;
   // If passed a path string, convert that into an object.
@@ -232,8 +251,8 @@ function collectionHelper(params, options, env) {
           template: inverse,
           tagName: itemHash.tagName
     });
-  } else if (hash.emptyViewClass) {
-    emptyViewClass = handlebarsGet(this, hash.emptyViewClass, options);
+  // } else if (hash.emptyViewClass) {
+    // emptyViewClass = handlebarsGet(this, hash.emptyViewClass, options);
   }
   if (emptyViewClass) { hash.emptyView = emptyViewClass; }
 

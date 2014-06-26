@@ -22,6 +22,8 @@ export var defaultEnv = {
     loc: locHelper,
     debugger: debuggerHelper,
     log: logHelper,
+    collection: collectionHelper,
+    each: eachHelper,
     view: viewHelper
   }
 };
