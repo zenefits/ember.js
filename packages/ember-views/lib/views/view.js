@@ -1076,6 +1076,10 @@ var View = CoreView.extend({
 
       // FIXME: This is a temporary HTMLBars integration mechanism
       if (Ember.View.defaultTemplateEnv) {
+        if (!get(this, 'templateData')) {
+          set(this, 'templateData', data);
+        }
+
         Ember.View.defaultTemplateEnv.data = data;
         var fragment = template(this, Ember.View.defaultTemplateEnv);
 
