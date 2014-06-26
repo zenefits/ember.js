@@ -313,6 +313,17 @@ export function actionHelper(element, params, options, env) {
   var actionName = params[0];
   var contexts = params.slice(1);
 
+  // Handle deprecated unquoted arguments behavior
+  if (actionName && actionName.isLazyValue) {
+    var actionFn = actionName.value();
+
+    if (typeof actionFn === 'undefined' || typeof actionFn === 'function') {
+      actionName = actionName._originalPath;
+      Ember.assert("You specified a quoteless path to the {{action}} helper '" + actionName + "' which did not resolve to an actionName. Perhaps you meant to use a quoted actionName? (e.g. {{action '" + actionName + "'}}).", true);
+    }
+  }
+
+
   var hash = options.hash,
       controller = env.data.keywords.controller;
 
