@@ -1,4 +1,5 @@
 /*globals TemplateTests:true,Ember:true */
+/*jshint newcap:false */
 
 import { A } from "ember-runtime/system/native_array";
 import EmberView from "ember-views/views/view";
@@ -104,23 +105,23 @@ test("should be able to bind to view attributes with {{bind-attr}}", function() 
   equal(view.$('img').attr('alt'), "Updated", "updates value");
 });
 
-// test("should be able to bind to globals with {{bind-attr}}", function() {
-//   TemplateTests.set('value', 'Test');
-//
-//   view = EmberView.create({
-//     template: compile('<img src="test.jpg" {{bind-attr alt="TemplateTests.value"}}>')
-//   });
-//
-//   appendView();
-//
-//   equal(view.$('img').attr('alt'), "Test", "renders initial value");
-//
-//   run(function() {
-//     TemplateTests.set('value', 'Updated');
-//   });
-//
-//   equal(view.$('img').attr('alt'), "Updated", "updates value");
-// });
+test("should be able to bind to globals with {{bind-attr}}", function() {
+  TemplateTests.set('value', 'Test');
+
+  view = EmberView.create({
+    template: compile('<img src="test.jpg" {{bind-attr alt="TemplateTests.value"}}>')
+  });
+
+  appendView();
+
+  equal(view.$('img').attr('alt'), "Test", "renders initial value");
+
+  run(function() {
+    TemplateTests.set('value', 'Updated');
+  });
+
+  equal(view.$('img').attr('alt'), "Updated", "updates value");
+});
 
 test("should not allow XSS injection via {{bind-attr}}", function() {
   view = EmberView.create({
@@ -341,23 +342,23 @@ test("should be able to add multiple classes using {{bind-attr class}}", functio
   ok(view.$('div').hasClass('disabled'), "falsy class in ternary classname definition is rendered");
 });
 
-// test("should be able to bind classes to globals with {{bind-attr class}}", function() {
-//   TemplateTests.set('isOpen', true);
-// 
-//   view = EmberView.create({
-//     template: compile('<img src="test.jpg" {{bind-attr class="TemplateTests.isOpen"}}>')
-//   });
-// 
-//   appendView();
-// 
-//   ok(view.$('img').hasClass('is-open'), "sets classname to the dasherized value of the global property");
-// 
-//   run(function() {
-//     TemplateTests.set('isOpen', false);
-//   });
-// 
-//   ok(!view.$('img').hasClass('is-open'), "removes the classname when the global property has changed");
-// });
+test("should be able to bind classes to globals with {{bind-attr class}}", function() {
+  TemplateTests.set('isOpen', true);
+
+  view = EmberView.create({
+    template: compile('<img src="test.jpg" {{bind-attr class="TemplateTests.isOpen"}}>')
+  });
+
+  appendView();
+
+  ok(view.$('img').hasClass('is-open'), "sets classname to the dasherized value of the global property");
+
+  run(function() {
+    TemplateTests.set('isOpen', false);
+  });
+
+  ok(!view.$('img').hasClass('is-open'), "removes the classname when the global property has changed");
+});
 
 /*
 
@@ -387,10 +388,6 @@ test("should be able to bind element attributes using {{bind-attr}} inside a blo
 });
 
 */
-
-/*
-
-NOTE: These tests require the {{each}} helper.
 
 test("should be able to bind-attr to 'this' in an {{#each}} block", function() {
   view = EmberView.create({
@@ -442,5 +439,3 @@ test("should be able to bind-attr to var in {{#each var in list}} block", functi
   ok(/two\.jpg$/.test(images[0].src));
   ok(/three\.gif$/.test(images[1].src));
 });
-
-*/

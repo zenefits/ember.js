@@ -275,8 +275,6 @@ function bindClasses(context, classBindings, view, bindAttrId, env) {
 
     if (path === '') {
       initialValue = true;
-    } else if (path === 'this') {
-      // TODO
     } else {
       var lazyValue = hooks.streamFor(context, path);
       initialValue = lazyValue.value();
