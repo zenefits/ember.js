@@ -392,6 +392,7 @@ test("should give its item views the classBinding specified by itemClassBinding"
     view.appendTo('#qunit-fixture');
   });
 
+  // EBRYN NOTE TO SELF: this is failing due to keywords wonkiness. it should be evaluated in the context of the parentView but it's evaluated in the context of child instead
   equal(view.$('ul li.is-bar').length, 3, "adds class on initial rendering");
 
   // NOTE: in order to bind an item's class to a property of the item itself (e.g. `isBaz` above), it will be necessary

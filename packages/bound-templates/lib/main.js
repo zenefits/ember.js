@@ -108,6 +108,7 @@ define("bound-templates/runtime",
   function(__dependency1__, __exports__) {
     "use strict";
     var LazyValue = __dependency1__["default"];
+    var IS_BINDING = /^.+Binding$/;
 
     function streamifyArgs(context, params, options, env) {
       var hooks = env.hooks;
@@ -133,6 +134,9 @@ define("bound-templates/runtime",
       for (var key in hash) {
         if (hashTypes[key] === 'id') {
           hash[key] = hooks.streamFor(context, hash[key]);
+        } else if (hashTypes[key] === 'string' && key !== 'classBinding' && key !== 'itemClassBinding' && IS_BINDING.test(key)) {
+          hash[key.slice(0, -7)] = hooks.streamFor(context, hash[key]);
+          delete hash[key];
         }
       }
     }

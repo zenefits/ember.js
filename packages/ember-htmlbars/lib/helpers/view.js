@@ -22,6 +22,7 @@ function bindingify(hash) {
 function viewHelper(params, options, env) {
   var hash = bindingify(options.hash);
   if (hash.class) { hash.classNames = hash.class.split(' '); }
+  if (hash.classBinding) { hash.classNameBindings = hash.classBinding.split(' '); }
   if (hash.id) { hash.elementId = hash.id; }
 
   if (options.render) { hash.template = options.render; }

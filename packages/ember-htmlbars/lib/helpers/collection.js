@@ -223,6 +223,7 @@ function collectionHelper(params, options, env) {
   delete hash.itemViewClass;
   delete hash.itemView;
 
+  var itemHashKey, itemHashValue;
   // Go through options passed to the {{collection}} helper and extract options
   // that configure item views instead of the collection itself.
   for (var prop in hash) {
@@ -231,7 +232,14 @@ function collectionHelper(params, options, env) {
 
       if (match && prop !== 'itemController') {
         // Convert itemShouldFoo -> shouldFoo
-        itemHash[match[1].toLowerCase() + match[2]] = hash[prop];
+        itemHashKey = match[1].toLowerCase() + match[2];
+        itemHashValue = hash[prop];
+
+        if (itemHashValue && itemHashValue.isLazyValue) {
+          itemHash[itemHashKey + 'Binding'] = itemHashValue;
+        } else {
+          itemHash[itemHashKey] = itemHashValue;
+        }
         // Delete from hash as this will end up getting passed to the
         // {{view}} helper method.
         delete hash[prop];
@@ -241,7 +249,7 @@ function collectionHelper(params, options, env) {
 
   if (fn) {
     itemHash.template = fn;
-    delete options.fn;
+    delete options.render;
   }
 
   var emptyViewClass;
