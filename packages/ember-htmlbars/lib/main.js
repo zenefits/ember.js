@@ -4,6 +4,7 @@ import streamFor from "ember-htmlbars/hooks/streamFor";
 import locHelper from "ember-htmlbars/helpers/loc";
 import debuggerHelper from "ember-htmlbars/helpers/debugger";
 import logHelper from "ember-htmlbars/helpers/log";
+import viewHelper from "ember-htmlbars/helpers/view";
 
 export var defaultEnv = {
   hooks: {
@@ -18,6 +19,7 @@ export var defaultEnv = {
   helpers: {
     loc: locHelper,
     debugger: debuggerHelper,
-    log: logHelper
+    log: logHelper,
+    view: viewHelper
   }
 };
