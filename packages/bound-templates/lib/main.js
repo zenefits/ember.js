@@ -167,6 +167,7 @@ define("bound-templates/runtime",
 
       if (helper) {
         streamifyArgs(context, params, options, env);
+        options.context = context; // FIXME: this kinda sucks
         return helper(element, params, options, env);
       } else {
         return hooks.streamFor(context, path);
