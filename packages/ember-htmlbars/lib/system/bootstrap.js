@@ -65,6 +65,9 @@ function bootstrap(ctx) {
 }
 
 function _bootstrap() {
+  if (!window.document) {
+    return;
+  }
   bootstrap(jQuery(document));
 }
 
