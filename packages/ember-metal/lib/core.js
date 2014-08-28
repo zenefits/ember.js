@@ -180,9 +180,9 @@ Ember.SHIM_ES5 = (Ember.ENV.SHIM_ES5 === false) ? false : Ember.EXTEND_PROTOTYPE
 
   @property LOG_VERSION
   @type Boolean
-  @default true
+  @default false
 */
-Ember.LOG_VERSION = (Ember.ENV.LOG_VERSION === false) ? false : true;
+Ember.LOG_VERSION = Ember.ENV.LOG_VERSION === true;
 
 /**
   Empty function. Useful for some operations. Always returns `this`.
