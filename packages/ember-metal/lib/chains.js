@@ -345,15 +345,17 @@ ChainNode.prototype = {
     // unchain rest of path first...
     if (path && path.length > 1) {
       var nextKey  = firstKey(path);
-      var nextPath = path.slice(nextKey.length + 1);
-      node.unchain(nextKey, nextPath);
-    }
+      path = path.slice(nextKey.length + 1);
+      if (path && path.length > 1) {
+        node.unchain(nextKey, path);
+      }
 
-    // delete node if needed.
-    node.count--;
-    if (node.count <= 0) {
-      chains[node._key] = undefined;
-      node.destroy();
+      // delete node if needed.
+      node.count--;
+      if (node.count <= 0) {
+        chains[node._key] = undefined;
+        node.destroy();
+      }
     }
   },
 
