@@ -95,6 +95,7 @@ OrderedSet.prototype = {
     this.presenceSet = Object.create(null);
     this.list = [];
     this.size = 0;
+    this._cursors = [];
   },
 
   /**
@@ -142,12 +143,23 @@ OrderedSet.prototype = {
     var guid = _guid || guidFor(obj);
     var presenceSet = this.presenceSet;
     var list = this.list;
+    var cursors = this._cursors;
+    var cursor;
 
     if (presenceSet[guid] === true) {
       delete presenceSet[guid];
       var index = indexOf.call(list, obj);
       if (index > -1) {
         list.splice(index, 1);
+
+        for (var i = 0, l = cursors.length; i < l; i++) {
+          cursor = cursors[i];
+
+          if (cursor >= index) {
+            cursors[i]--;
+          }
+          
+        }
       }
       this.size = list.length;
       return true;
@@ -192,17 +204,22 @@ OrderedSet.prototype = {
 
     var list = this.list;
     var length = arguments.length;
+    var cursors = this._cursors;
+    var cursor = cursors.push(0) - 1;
     var i;
 
     if (length === 2) {
-      for (i = 0; i < list.length; i++) {
+      for (i = cursors[cursor]; i < list.length; i = ++cursors[cursor]) {
         fn.call(arguments[1], list[i], list[i], this);
       }
     } else {
-      for (i = 0; i < list.length; i++) {
+
+      for (i = cursors[cursor]; i < list.length; i = ++cursors[cursor]) {
         fn(list[i], list[i], this);
       }
     }
+
+    cursors.splice(cursor, 1);
   },
 
   /**

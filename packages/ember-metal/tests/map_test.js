@@ -425,6 +425,69 @@ function testMap(nameAndFunc) {
     equal(iteration, 4, 'expected 3 iterations');
   });
 
+  test("forEach basic /w deletion (earlier in the list) while enumerating", function() {
+    map.set("a", 1);
+    map.set("b", 2);
+    map.set("c", 3);
+
+    var iteration = 0;
+
+    var expectations = [
+      { value: 1, key: "a", context: unboundThis },
+      { value: 2, key: "b", context: unboundThis },
+      { value: 3, key: "c", context: unboundThis },
+    ];
+
+    map.forEach(function(value, key, _map) {
+      if (iteration === 0) {
+        map.delete('a');
+      }
+
+      equal(map, _map);
+
+      var expectation = expectations[iteration];
+
+      equal(value, expectation.value, 'value should be correct');
+      equal(key, expectation.key, 'key should be correct');
+      equal(this, expectation.context, 'context should be as if it was unbound');
+
+      iteration++;
+    });
+
+    equal(iteration, 3, 'expected 3 iterations');
+  });
+
+
+  test("forEach basic /w deletion (later in the list) while enumerating", function() {
+    map.set("a", 1);
+    map.set("b", 2);
+    map.set("c", 3);
+
+    var iteration = 0;
+
+    var expectations = [
+      { value: 1, key: "a", context: unboundThis },
+      { value: 2, key: "b", context: unboundThis }
+    ];
+
+    map.forEach(function(value, key, _map) {
+      if (iteration === 0) {
+        map.delete('c');
+      }
+
+      var expectation = expectations[iteration];
+
+      equal(value, expectation.value, 'value should be correct');
+      equal(key, expectation.key, 'key should be correct');
+      equal(this, expectation.context, 'context should be as if it was unbound');
+
+      iteration++;
+    });
+
+    equal(iteration, 2, 'expected 3 iterations');
+  });
+
+
   test("clear", function() {
     var iterations = 0;
 
@@ -438,14 +501,19 @@ function testMap(nameAndFunc) {
     map.forEach(function() {
       iterations++;
     });
+
     equal(iterations, 4);
 
     map.clear();
+
     equal(map.size, 0);
+
     iterations = 0;
+
     map.forEach(function() {
       iterations++;
     });
+
     equal(iterations, 0);
   });
 
