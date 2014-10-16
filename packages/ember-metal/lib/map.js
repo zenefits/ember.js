@@ -196,11 +196,11 @@ OrderedSet.prototype = {
 
     if (length === 2) {
       for (i = 0; i < list.length; i++) {
-        fn.call(arguments[1], list[i]);
+        fn.call(arguments[1], list[i], list[i], this);
       }
     } else {
       for (i = 0; i < list.length; i++) {
-        fn(list[i]);
+        fn(list[i], list[i], this);
       }
     }
   },
@@ -402,11 +402,11 @@ Map.prototype = {
     if (length === 2) {
       thisArg = arguments[1];
       cb = function(key) {
-        callback.call(thisArg, map.get(key), key);
+        callback.call(thisArg, map.get(key), key, map);
       };
     } else {
       cb = function(key) {
-        callback(map.get(key), key);
+        callback(map.get(key), key, map);
       };
     }
 

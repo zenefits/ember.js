@@ -316,8 +316,10 @@ function testMap(nameAndFunc) {
       { value: 3, key: "c", context: unboundThis },
     ];
 
-    map.forEach(function(value, key) {
+    map.forEach(function(value, key, _map) {
       var expectation = expectations[iteration];
+
+      equal(map, _map);
 
       equal(value, expectation.value, 'value should be correct');
       equal(key, expectation.key, 'key should be correct');
@@ -343,8 +345,10 @@ function testMap(nameAndFunc) {
       { value: 3, key: "c", context: context },
     ];
 
-    map.forEach(function(value, key) {
+    map.forEach(function(value, key, _map) {
       var expectation = expectations[iteration];
+
+      equal(map, _map);
 
       equal(value, expectation.value, 'value should be correct');
       equal(key, expectation.key, 'key should be correct');
@@ -369,10 +373,12 @@ function testMap(nameAndFunc) {
       { value: 2, key: "b", context: unboundThis }
     ];
 
-    map.forEach(function(value, key) {
+    map.forEach(function(value, key, _map) {
       if (iteration === 0) {
         map.delete("c");
       }
+
+      equal(map, _map);
 
       var expectation = expectations[iteration];
 
@@ -400,10 +406,12 @@ function testMap(nameAndFunc) {
       { value: 4, key: "d", context: unboundThis },
     ];
 
-    map.forEach(function(value, key) {
+    map.forEach(function(value, key, _map) {
       if (iteration === 0) {
         map.set('d', 4);
       }
+
+      equal(map, _map);
 
       var expectation = expectations[iteration];
 
