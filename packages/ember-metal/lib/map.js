@@ -21,7 +21,7 @@
 */
 
 import { guidFor } from "ember-metal/utils";
-import { indexOf } from "ember-metal/array";
+import { indexOf } from "ember-metal/enumerable_utils";
 import { create } from "ember-metal/platform";
 import { deprecateProperty } from "ember-metal/deprecate_property";
 
@@ -148,7 +148,7 @@ OrderedSet.prototype = {
 
     if (presenceSet[guid] === true) {
       delete presenceSet[guid];
-      var index = indexOf.call(list, obj);
+      var index = indexOf(list, obj);
       if (index > -1) {
         list.splice(index, 1);
 
