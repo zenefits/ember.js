@@ -5,6 +5,12 @@ for a detailed explanation.
 
 ## Feature Flags
 
+* `ssr-boot`
+
+  Supports booting an Ember application in the node.js environment.
+  It also allows for a single application instance to handle routing
+  to multiple routes simultaneously.
+
 * `ember-routing-named-substates`
 
   Add named substates; e.g. when resolving a `loading` or `error`

@@ -97,16 +97,17 @@ var EmberRouter = EmberObject.extend(Evented, {
     If no value is found `/` will be used.
 
     @method startRouting
+    @param {String} [url] An optional initial URL to start routing at.
     @private
   */
-  startRouting: function() {
+  startRouting: function(url) {
     this.router = this.router || this.constructor.map(K);
 
     var router = this.router;
     var location = get(this, 'location');
     var container = this.container;
     var self = this;
-    var initialURL = get(this, 'initialURL');
+    var initialURL = url || get(this, 'initialURL');
     var initialTransition;
 
     // Allow the Location class to cancel the router setup while it refreshes

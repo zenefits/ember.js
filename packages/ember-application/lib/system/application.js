@@ -266,7 +266,9 @@ var Application = Namespace.extend(DeferredMixin, {
 
     this._super();
 
-    this.scheduleInitialize();
+    if (environment.hasDOM) {
+      this.scheduleInitialize();
+    }
 
     if (!librariesRegistered) {
       librariesRegistered = true;
@@ -1067,6 +1069,23 @@ function resolverFor(namespace) {
   resolve.__resolver__ = resolver;
 
   return resolve;
+}
+
+if (Ember.FEATURES.isEnabled("ssr-boot")) {
+  Application.reopen({
+    boot: function() {
+      var router = this.__container__.lookup('router:main');
+
+      this.runInitializers();
+      runLoadHooks('application', this);
+
+      return Ember.RSVP.resolve({
+        visit: function(url) {
+          return router.startRouting(url);
+        }
+      });
+    }
+  });
 }
 
 export default Application;
