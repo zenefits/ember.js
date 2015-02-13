@@ -29,14 +29,14 @@ var defaultTemplate = htmlbarsTemplate;
 
 var selectOptionDefaultTemplate = {
   isHTMLBars: true,
-  render: function(context, env, contextualElement) {
+  render: function(context, env, options) {
     var lazyValue = context.getStream('view.label');
 
     lazyValue.subscribe(context._wrapAsScheduled(function() {
       run.scheduleOnce('render', context, 'rerender');
     }));
 
-    return lazyValue.value();
+    return { fragment: lazyValue.value() };
   }
 };
 

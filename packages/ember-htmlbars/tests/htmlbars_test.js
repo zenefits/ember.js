@@ -13,7 +13,7 @@ if (Ember.FEATURES.isEnabled('ember-htmlbars')) {
 
     var env = merge({ dom: domHelper }, defaultEnv);
 
-    var output = template.render({}, env, document.body);
+    var output = template.render({}, env, { contextualElement: document.body }).fragment;
     equalHTML(output, "ohai");
   });
 }

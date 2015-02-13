@@ -312,11 +312,11 @@ function linkToHelper(params, hash, options, env) {
       isHTMLBars: true,
       render: function(view, env) {
         var value = read(linkTitle) || "";
-        if (parseTextAsHTML) {
-          return value;
-        } else {
-          return env.dom.createTextNode(value);
+        if (!parseTextAsHTML) {
+          value =  env.dom.createTextNode(value);
         }
+
+        return { fragment: value };
       }
     };
   }
