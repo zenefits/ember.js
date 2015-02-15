@@ -56,6 +56,18 @@ export default Mixin.create(ActionHandler, ControllerContentModelAliasDeprecatio
   /**
     @private
   */
-  content: alias('model')
+  content: alias('model'),
+
+  deprecatedSendHandles(actionName) {
+    return !!this[actionName];
+  },
+
+  deprecatedSend(actionName) {
+    var args = [].slice.call(arguments, 1);
+    Ember.assert('' + this + " has the action " + actionName + " but it is not a function", typeof this[actionName] === 'function');
+    Ember.deprecate('Action handlers implemented directly on controllers are deprecated in favor of action handlers on an `actions` object ( action: `' + actionName + '` on ' + this + ')', false);
+    this[actionName].apply(this, args);
+    return;
+  }
 
 });
