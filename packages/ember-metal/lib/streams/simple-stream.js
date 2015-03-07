@@ -12,7 +12,7 @@ function SimpleStream(source) {
 SimpleStream.prototype = create(Stream.prototype);
 
 merge(SimpleStream.prototype, {
-  valueFn() {
+  compute() {
     return read(this.source);
   },
 
