@@ -306,7 +306,7 @@ Stream.prototype = {
     };
   },
 
-  prune: function() {
+  prune() {
     if (this.subscriberHead === null) {
       this.destroy(true);
     }

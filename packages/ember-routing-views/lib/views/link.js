@@ -337,7 +337,7 @@ var LinkComponent = EmberComponent.extend({
   */
   loadingHref: '#',
 
-  willRender: function() {
+  willRender() {
     var queryParams;
 
     var attrs = this.attrs;
