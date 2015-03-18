@@ -174,6 +174,9 @@ export function concat(array, separator) {
     var i, l;
     var stream = new Stream(function() {
       return concat(readArray(array), separator);
+    }, function() {
+      var labels = labelsFor(array);
+      return `concat([${labels.join(', ')}]; separator=${inspect(separator)})`;
     });
 
     for (i = 0, l=array.length; i < l; i++) {
@@ -186,9 +189,50 @@ export function concat(array, separator) {
   }
 }
 
+export function labelsFor(streams)  {
+  var labels =  [];
+
+  for (var i=0, l=streams.length; i<l; i++) {
+    var stream = streams[i];
+    labels.push(labelFor(stream));
+  }
+
+  return labels;
+}
+
+export function labelsForObject(streams)  {
+  var labels = [];
+
+  for (var prop in streams) {
+    labels.push(`${prop}: ${inspect(streams[prop])}`);
+  }
+
+  return labels.length ? `{ ${labels.join(', ')} }` : "{}";
+}
+
+export function labelFor(maybeStream) {
+  if (isStream(maybeStream)) {
+    var stream = maybeStream;
+    return typeof stream.label === 'function' ? stream.label() : stream.label;
+  } else {
+    return inspect(maybeStream);
+  }
+}
+
+function inspect(value) {
+  switch (typeof value) {
+    case 'string': return `"${value}"`;
+    case 'object': return "{ ... }";
+    case 'function': return "function() { ... }";
+    default: return String(value);
+  }
+}
+
 export function or(first, second) {
   var stream = new Stream(function() {
     return first.value() || second.value();
+  }, function() {
+    return `${labelFor(first)} || ${labelFor(second)}`;
   });
 
   stream.addDependency(first);
@@ -204,10 +248,14 @@ export function addDependency(stream, dependency) {
   }
 }
 
-export function zip(streams, callback) {
+export function zip(streams, callback, label) {
+  Ember.assert("Must call zip with a label", !!label);
+
   var stream = new Stream(function() {
     var array = readArray(streams);
     return callback ? callback(array) : array;
+  }, function() {
+    return `${label}(${labelsFor(streams)})`;
   });
 
   for (var i=0, l=streams.length; i<l; i++) {
@@ -217,10 +265,14 @@ export function zip(streams, callback) {
   return stream;
 }
 
-export function zipHash(object, callback) {
+export function zipHash(object, callback, label) {
+  Ember.assert("Must call zipHash with a label", !!label);
+
   var stream = new Stream(function() {
     var hash = readHash(object);
     return callback ? callback(hash) : hash;
+  }, function() {
+    return `${label}(${labelsForObject(object)})`;
   });
 
   for (var prop in object) {
@@ -262,9 +314,10 @@ export function zipHash(object, callback) {
                          non-stream object, the return value of the provided
                          function `fn`.
  */
-export function chain(value, fn) {
+export function chain(value, fn, label) {
+  Ember.assert("Must call chain with a label", !!label);
   if (isStream(value)) {
-    var stream = new Stream(fn);
+    var stream = new Stream(fn, function() { return `${label}(${labelFor(value)})`; });
     stream.addDependency(value);
     return stream;
   } else {
