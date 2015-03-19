@@ -15,7 +15,7 @@ QUnit.module("EmberView#isVisible", {
   }
 });
 
-QUnit.test("should hide views when isVisible is false", function() {
+QUnit.skip("should hide views when isVisible is false", function() {
   view = EmberView.create({
     isVisible: false
   });
@@ -36,7 +36,7 @@ QUnit.test("should hide views when isVisible is false", function() {
   });
 });
 
-QUnit.test("should hide element if isVisible is false before element is created", function() {
+QUnit.skip("should hide element if isVisible is false before element is created", function() {
   view = EmberView.create({
     isVisible: false
   });
@@ -107,7 +107,7 @@ QUnit.module("EmberView#isVisible with Container", {
   }
 });
 
-QUnit.test("view should be notified after isVisible is set to false and the element has been hidden", function() {
+QUnit.skip("view should be notified after isVisible is set to false and the element has been hidden", function() {
   run(function() {
     view = View.create({ isVisible: false });
     view.append();
@@ -125,7 +125,7 @@ QUnit.test("view should be notified after isVisible is set to false and the elem
   equal(grandchildBecameVisible, 1);
 });
 
-QUnit.test("view should be notified after isVisible is set to false and the element has been hidden", function() {
+QUnit.skip("view should be notified after isVisible is set to false and the element has been hidden", function() {
   view = View.create({ isVisible: true });
   var childView = view.get('childViews').objectAt(0);
 
@@ -145,7 +145,7 @@ QUnit.test("view should be notified after isVisible is set to false and the elem
   equal(grandchildBecameHidden, 1);
 });
 
-QUnit.test("view should be notified after isVisible is set to true and the element has been shown", function() {
+QUnit.skip("view should be notified after isVisible is set to true and the element has been shown", function() {
   view = View.create({ isVisible: false });
 
   run(function() {
@@ -165,7 +165,7 @@ QUnit.test("view should be notified after isVisible is set to true and the eleme
   equal(grandchildBecameVisible, 1);
 });
 
-QUnit.test("if a view descends from a hidden view, making isVisible true should not trigger becameVisible", function() {
+QUnit.skip("if a view descends from a hidden view, making isVisible true should not trigger becameVisible", function() {
   view = View.create({ isVisible: true });
   var childView = view.get('childViews').objectAt(0);
 
@@ -194,7 +194,7 @@ QUnit.test("if a view descends from a hidden view, making isVisible true should 
   equal(grandchildBecameVisible, 0, "the grandchild did not become visible");
 });
 
-QUnit.test("if a child view becomes visible while its parent is hidden, if its parent later becomes visible, it receives a becameVisible callback", function() {
+QUnit.skip("if a child view becomes visible while its parent is hidden, if its parent later becomes visible, it receives a becameVisible callback", function() {
   view = View.create({ isVisible: false });
   var childView = view.get('childViews').objectAt(0);
 
