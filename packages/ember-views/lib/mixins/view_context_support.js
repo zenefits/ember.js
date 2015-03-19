@@ -2,8 +2,10 @@ import { Mixin } from "ember-metal/mixin";
 import { computed } from "ember-metal/computed";
 import { get } from "ember-metal/property_get";
 import { set } from "ember-metal/property_set";
+import LegacyViewSupport from "ember-views/mixins/legacy_view_support";
+import { observer } from "ember-metal/mixin";
 
-var ViewContextSupport = Mixin.create({
+var ViewContextSupport = Mixin.create(LegacyViewSupport, {
   /**
     The object from which templates should access properties.
 
@@ -83,6 +85,10 @@ var ViewContextSupport = Mixin.create({
 
     var parentView = this.parentView;
     return parentView ? get(parentView, 'controller') : null;
+  }),
+
+  _legacyControllerDidChange: observer('controller', function() {
+    this.walkChildViews(view => view.notifyPropertyChange('controller'));
   })
 });
 
