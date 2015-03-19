@@ -189,7 +189,7 @@ export function concat(array, separator) {
   }
 }
 
-export function labelsFor(streams)  {
+export function labelsFor(streams) {
   var labels =  [];
 
   for (var i=0, l=streams.length; i<l; i++) {
@@ -200,7 +200,7 @@ export function labelsFor(streams)  {
   return labels;
 }
 
-export function labelsForObject(streams)  {
+export function labelsForObject(streams) {
   var labels = [];
 
   for (var prop in streams) {
