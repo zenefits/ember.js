@@ -67,6 +67,7 @@ export default function makeBoundHelper(fn) {
     Ember.assert("makeBoundHelper generated helpers do not support use with blocks", !options.template);
 
     function valueFn() {
+      options.stream = this;
       return fn.call(view, readArray(params), readHash(hash), options, env);
     }
 

@@ -77,7 +77,8 @@ export default function makeBoundHelper(fn, compatMode) {
 
       args.push({
         hash: readHash(hash),
-        data: { properties: properties }
+        data: { properties: properties },
+        stream: this
       });
       return fn.apply(view, args);
     }
