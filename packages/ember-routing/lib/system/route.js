@@ -1375,13 +1375,7 @@ var Route = EmberObject.extend(ActionHandler, Evented, {
   */
   findModel: function() {
     var store = get(this, 'store');
-    if (typeof DS.Transform !== 'undefined') {
-      return store.find.apply(store, arguments);
-    }
-    var type = arguments[0];
-    var value = arguments[1];
-    var modelClass = this.container.lookupFactory('model:' + type);
-    return modelClass.find(value);
+    return store._findSync.apply(store, arguments);
   },
 
   /**
