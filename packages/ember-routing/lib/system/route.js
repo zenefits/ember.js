@@ -1375,7 +1375,14 @@ var Route = EmberObject.extend(ActionHandler, Evented, {
   */
   findModel: function() {
     var store = get(this, 'store');
-    return store._findSync.apply(store, arguments);
+    var type = arguments[0];
+    var value = arguments[1];
+    if (store.useStoreForLookup) {
+      return store._findSync.apply(store, arguments);
+    } else {
+      var modelClass = this.container.lookupFactory('model:' + type);
+      return modelClass.find(value);
+    }
   },
 
   /**
