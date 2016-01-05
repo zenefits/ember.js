@@ -201,7 +201,7 @@ export default {
 
     return {
       manager: state.manager,
-      parentView: env.view,
+      parentView: state.parentView || env.view,
       controller,
       targetObject,
       viewClassOrInstance
