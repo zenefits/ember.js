@@ -131,7 +131,10 @@ var CoreView = EmberObject.extend(Evented, ActionHandler, {
     // becoming falsy, for example).  In this case, it is our responsibility to
     // make sure that any render nodes created as part of the rendering process
     // are cleaned up.
-    if (!this.ownerView._destroyingSubtreeForView && this._renderNode) {
+
+    //HACK: The env check is to patch some issue with teardown in data-table. Should be removed once
+    // data-table has been replaced.
+    if (!this.ownerView._destroyingSubtreeForView && this._renderNode && this.ownerView.env) {
       Ember.assert('BUG: Render node exists without concomitant env.', this.ownerView.env);
       internal.clearMorph(this._renderNode, this.ownerView.env, true);
     }
