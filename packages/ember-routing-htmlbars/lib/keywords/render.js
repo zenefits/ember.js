@@ -126,7 +126,7 @@ export default {
     // choose name
     if (params.length > 1) {
       var factory = container.lookupFactory(controllerFullName) ||
-                    generateControllerFactory(container, controllerName);
+                    generateControllerFactory(container, controllerName, read(context));
 
       controller = factory.create({
         model: read(context),
