@@ -110,6 +110,9 @@ Ember.debug = function(message) {
   @public
 */
 Ember.deprecate = function(message, test, options) {
+  if (!Ember.ENV.LOG_DEPRECATIONS) {
+    return;
+  }
   if (Ember.ENV.RAISE_ON_DEPRECATION) {
     deprecationManager.setDefaultLevel(deprecationLevels.RAISE);
   }
